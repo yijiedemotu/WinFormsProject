@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+		<!-- 核心：程序运行时启用 PerMonitorV2 逐显示器DPI感知 -->
+		<ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+		<!-- 【关键】让VS Code/VS设计器固定96DPI渲染，预览稳定，减少设计时视觉跳变 -->
+		<ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="ScottPlot.WinForms" Version="5.1.59" />
+		<PackageReference Include="SunnyUI" Version="3.9.9" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+</Project>

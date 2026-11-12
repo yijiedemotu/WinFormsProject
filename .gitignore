@@ -1,0 +1,12 @@
+# 编译产物与 IDE 本地文件（bin/ 含 NuGet 运行时副本，体积很大，不入库）
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.userprefs
+
+# 本地工作区数据
+.workbuddy/
+TestResults/
