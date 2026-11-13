@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             uiPanel1 = new Sunny.UI.UIPanel();
+            uiLight1 = new Sunny.UI.UILight();
             uiSymbolButton4 = new Sunny.UI.UISymbolButton();
             uiSymbolButton3 = new Sunny.UI.UISymbolButton();
             uiSymbolButton2 = new Sunny.UI.UISymbolButton();
@@ -39,6 +40,7 @@
             // 
             // uiPanel1
             // 
+            uiPanel1.Controls.Add(uiLight1);
             uiPanel1.Controls.Add(uiSymbolButton4);
             uiPanel1.Controls.Add(uiSymbolButton3);
             uiPanel1.Controls.Add(uiSymbolButton2);
@@ -54,6 +56,18 @@
             uiPanel1.Text = null;
             uiPanel1.TextAlignment = ContentAlignment.MiddleCenter;
             // 
+            // uiLight1
+            // 
+            uiLight1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLight1.Location = new Point(977, 11);
+            uiLight1.MinimumSize = new Size(1, 1);
+            uiLight1.Name = "uiLight1";
+            uiLight1.Radius = 35;
+            uiLight1.Size = new Size(35, 35);
+            uiLight1.State = Sunny.UI.UILightState.Off;
+            uiLight1.TabIndex = 4;
+            uiLight1.Text = "uiLight1";
+            // 
             // uiSymbolButton4
             // 
             uiSymbolButton4.Dock = DockStyle.Left;
@@ -62,9 +76,11 @@
             uiSymbolButton4.MinimumSize = new Size(1, 1);
             uiSymbolButton4.Name = "uiSymbolButton4";
             uiSymbolButton4.Size = new Size(172, 54);
+            uiSymbolButton4.Symbol = 61546;
             uiSymbolButton4.TabIndex = 3;
             uiSymbolButton4.Text = "阈值设置";
             uiSymbolButton4.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiSymbolButton4.Click += uiSymbolButton4_Click;
             // 
             // uiSymbolButton3
             // 
@@ -74,9 +90,11 @@
             uiSymbolButton3.MinimumSize = new Size(1, 1);
             uiSymbolButton3.Name = "uiSymbolButton3";
             uiSymbolButton3.Size = new Size(172, 54);
+            uiSymbolButton3.Symbol = 61953;
             uiSymbolButton3.TabIndex = 2;
             uiSymbolButton3.Text = "趋势曲线";
             uiSymbolButton3.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiSymbolButton3.Click += uiSymbolButton3_Click;
             // 
             // uiSymbolButton2
             // 
@@ -86,9 +104,11 @@
             uiSymbolButton2.MinimumSize = new Size(1, 1);
             uiSymbolButton2.Name = "uiSymbolButton2";
             uiSymbolButton2.Size = new Size(172, 54);
+            uiSymbolButton2.Symbol = 61442;
             uiSymbolButton2.TabIndex = 1;
             uiSymbolButton2.Text = "查询统计";
             uiSymbolButton2.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiSymbolButton2.Click += uiSymbolButton2_Click;
             // 
             // uiSymbolButton1
             // 
@@ -143,5 +163,6 @@
         private Sunny.UI.UISymbolButton uiSymbolButton2;
         private Sunny.UI.UISymbolButton uiSymbolButton1;
         private Sunny.UI.UIPanel uiPanel2;
+        private Sunny.UI.UILight uiLight1;
     }
 }

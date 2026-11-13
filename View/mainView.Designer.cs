@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             uiPanel1 = new Sunny.UI.UIPanel();
             uiButton3 = new Sunny.UI.UIButton();
             uiButton2 = new Sunny.UI.UIButton();
@@ -52,6 +53,7 @@
             Column9 = new DataGridViewTextBoxColumn();
             Column10 = new DataGridViewTextBoxColumn();
             Column11 = new DataGridViewTextBoxColumn();
+            timer1 = new System.Windows.Forms.Timer(components);
             uiPanel1.SuspendLayout();
             uiPanel2.SuspendLayout();
             uiTitlePanel1.SuspendLayout();
@@ -161,7 +163,7 @@
             uiComboBox1.Size = new Size(145, 29);
             uiComboBox1.SymbolSize = 24;
             uiComboBox1.TabIndex = 1;
-            uiComboBox1.Text = "uiComboBox1";
+            uiComboBox1.Text = "请选择通道";
             uiComboBox1.TextAlignment = ContentAlignment.MiddleLeft;
             uiComboBox1.Watermark = "";
             // 
@@ -292,6 +294,12 @@
             Column11.HeaderText = "通道8数据";
             Column11.Name = "Column11";
             // 
+            // timer1
+            // 
+            timer1.Enabled = true;
+            timer1.Interval = 1000;
+            timer1.Tick += timer1_Tick;
+            // 
             // mainView
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -335,5 +343,6 @@
         private DataGridViewTextBoxColumn Column9;
         private DataGridViewTextBoxColumn Column10;
         private DataGridViewTextBoxColumn Column11;
+        private System.Windows.Forms.Timer timer1;
     }
 }

@@ -22,5 +22,11 @@ namespace WinFormsApp3.View
         {
 
         }
+        //刷新simpleView中的数据
+        public void refreshData(ushort data)
+        {
+            //将读取到的数据传递给simpleView中的uiTextBox1进行刷新
+            uiTextBox7.Text = data.ToString();
+        }
     }
 }

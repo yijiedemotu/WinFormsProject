@@ -10,3 +10,7 @@
 # 本地工作区数据
 .workbuddy/
 TestResults/
+
+# 运行时日志（Log.cs 按 日期/级别 分目录写入）
+Logs/
+**/Logs/
