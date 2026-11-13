@@ -14,3 +14,10 @@ TestResults/
 # 运行时日志（Log.cs 按 日期/级别 分目录写入）
 Logs/
 **/Logs/
+
+# SQLite 运行时数据库（SqlHelper 默认 data.db，含 WAL 临时文件）
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3

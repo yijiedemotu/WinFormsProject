@@ -16,13 +16,16 @@ namespace WinFormsApp3.Helper
         /// </summary>
         public static void formShow(UIPage uIPage, UIPanel uIPanel)
         {
-            if (uIPanel != null)
-            {
-                uIPanel.Controls.Clear();    // 清空面板里旧控件
-                uIPage.Parent = uIPanel;     // 设置父容器
-                uIPage.Dock = DockStyle.Fill;// 铺满面板
-                uIPage.Show();
-            }
+            if (uIPage == null)
+                throw new ArgumentNullException(nameof(uIPage));
+
+            if (uIPanel == null)
+                throw new ArgumentNullException(nameof(uIPanel));
+
+            uIPanel.Controls.Clear();    // 清空面板里旧控件
+            uIPage.Parent = uIPanel;     // 设置父容器
+            uIPage.Dock = DockStyle.Fill;// 铺满面板
+            uIPage.Show();
         }
 
         /// <summary>

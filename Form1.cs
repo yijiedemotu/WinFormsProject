@@ -6,41 +6,35 @@ using WinFormsApp3.View;
 
 namespace WinFormsApp3
 {
+    //窗体的大框架
     public partial class Form1 : UIForm
     {
+
+        // 创建mainView的实例
+        private mainView mainView;
+
+        //Form1的构造函数
         public Form1()
         {
             InitializeComponent();
 
-            //当窗体加载时，拿到通讯对象modbusRtuClient，并传递给mainView、totalView、plotView、yvzhiView
-            var isConnected = mainCommon.modbusRtuClient.Connect("com2");
-            //如果连接成功，小灯变为绿色，否则不变色
-            if (isConnected)
-            {
-                uiLight1.State = UILightState.On;
-            }
-
         }
-        // 创建mainView的实例
-        private mainView mainView = new mainView();
 
-        //当点击按钮时，调用FormShowHelper.formShow方法，将mainView嵌入到uiPanel1中
-        //Helper.FormShowHelper.formShow(new View.mainView(), uiPanel1);
         private void uiSymbolButton1_Click(object sender, EventArgs e)
         {
+            //当点击按钮时，调用FormShowHelper.formShow方法，将mainView嵌入到uiPanel1中
             FormShowHelper.formShow(mainView, uiPanel2);
         }
-
-        //在窗体加载时，调用FormShowHelper.formShow方法，将mainView嵌入到uiPanel1中
         private void Form1_Load(object sender, EventArgs e)
         {
+            // 创建mainView的实例，并将uiLight1传递给mainView的构造函数
+            mainView = new mainView(uiLight1); 
+            //在窗体加载时，调用FormShowHelper.formShow方法，将mainView嵌入到uiPanel1中
             FormShowHelper.formShow(mainView, uiPanel2);
         }
-
-        //在窗体显示时，调用FormShowHelper.formShow方法，将mainView嵌入到uiPanel1中
         private void Form1_Shown(object sender, EventArgs e)
         {
-
+            //在窗体显示时，调用FormShowHelper.formShow方法，将mainView嵌入到uiPanel1中
         }
 
         // 创建totalView的实例
@@ -56,6 +50,7 @@ namespace WinFormsApp3
         private plotView plotView = new plotView();
         private void uiSymbolButton3_Click(object sender, EventArgs e)
         {
+            //当点击按钮时，调用FormShowHelper.formShow方法，将plotView嵌入到uiPanel1中
             FormShowHelper.formShow(plotView, uiPanel2);
         }
 
@@ -63,6 +58,7 @@ namespace WinFormsApp3
         private yvzhiView yvzhiView = new yvzhiView();
         private void uiSymbolButton4_Click(object sender, EventArgs e)
         {
+            //当点击按钮时，调用FormShowHelper.formShow方法，将yvzhiView嵌入到uiPanel1中
             FormShowHelper.formShow(yvzhiView, uiPanel2);
         }
     }

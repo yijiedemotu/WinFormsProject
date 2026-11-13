@@ -15,6 +15,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="DH.NModbus" Version="3.91.2024.1031" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.33" />
 		<PackageReference Include="Microsoft.IdentityModel.Logging" Version="8.23.0" />
 		<PackageReference Include="NModbus" Version="3.0.83" />
 		<PackageReference Include="NModbus.Serial" Version="3.0.83" />

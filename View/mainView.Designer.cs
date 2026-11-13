@@ -91,6 +91,7 @@
             uiButton3.TabIndex = 7;
             uiButton3.Text = "保存数据";
             uiButton3.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton3.Click += uiButton3_Click;
             // 
             // uiButton2
             // 
@@ -166,6 +167,7 @@
             uiComboBox1.Text = "请选择通道";
             uiComboBox1.TextAlignment = ContentAlignment.MiddleLeft;
             uiComboBox1.Watermark = "";
+            uiComboBox1.SelectedIndexChanged += uiComboBox1_SelectedIndexChanged;
             // 
             // uiButton1
             // 
@@ -177,6 +179,7 @@
             uiButton1.TabIndex = 0;
             uiButton1.Text = "连接";
             uiButton1.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton1.Click += uiButton1_Click;
             // 
             // uiPanel2
             // 
@@ -241,62 +244,72 @@
             // 
             // Column1
             // 
+            Column1.DataPropertyName = "Id";
             Column1.HeaderText = "序号";
             Column1.Name = "Column1";
             // 
             // Column2
             // 
+            Column2.DataPropertyName = "testTime";
             Column2.HeaderText = "检测时间";
             Column2.Name = "Column2";
             // 
             // Column3
             // 
+            Column3.DataPropertyName = "projectName";
             Column3.HeaderText = "产品名称";
             Column3.Name = "Column3";
             // 
             // Column4
             // 
+            Column4.DataPropertyName = "data1";
             Column4.HeaderText = "通道1数据";
             Column4.Name = "Column4";
             // 
             // Column5
             // 
+            Column5.DataPropertyName = "data2";
             Column5.HeaderText = "通道2数据";
             Column5.Name = "Column5";
             // 
             // Column6
             // 
+            Column6.DataPropertyName = "data3";
             Column6.HeaderText = "通道3数据";
             Column6.Name = "Column6";
             // 
             // Column7
             // 
+            Column7.DataPropertyName = "data4";
             Column7.HeaderText = "通道4数据";
             Column7.Name = "Column7";
             // 
             // Column8
             // 
+            Column8.DataPropertyName = "data5";
             Column8.HeaderText = "通道5数据";
             Column8.Name = "Column8";
             // 
             // Column9
             // 
+            Column9.DataPropertyName = "data6";
             Column9.HeaderText = "通道6数据";
             Column9.Name = "Column9";
             // 
             // Column10
             // 
+            Column10.DataPropertyName = "data7";
             Column10.HeaderText = "通道7数据";
             Column10.Name = "Column10";
             // 
             // Column11
             // 
+            Column11.DataPropertyName = "data8";
             Column11.HeaderText = "通道8数据";
             Column11.Name = "Column11";
             // 
             // timer1
             // 
-            timer1.Enabled = true;
             timer1.Interval = 1000;
             timer1.Tick += timer1_Tick;
             // 
@@ -332,6 +345,7 @@
         private Sunny.UI.UILabel uiLabel2;
         private Sunny.UI.UITitlePanel uiTitlePanel1;
         private DataGridView dataGridView1;
+        private System.Windows.Forms.Timer timer1;
         private DataGridViewTextBoxColumn Column1;
         private DataGridViewTextBoxColumn Column2;
         private DataGridViewTextBoxColumn Column3;
@@ -343,6 +357,5 @@
         private DataGridViewTextBoxColumn Column9;
         private DataGridViewTextBoxColumn Column10;
         private DataGridViewTextBoxColumn Column11;
-        private System.Windows.Forms.Timer timer1;
     }
 }
