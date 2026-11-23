@@ -18,29 +18,26 @@ body{margin:0;background:#eef1f5;color:#222;
 .bar button:hover{border-color:#2563eb;color:#2563eb}
 .paper{width:794px;margin:24px auto 60px;background:#fff;padding:34px 38px 40px;
   box-shadow:0 3px 16px rgba(16,24,40,.09);min-height:1050px}
-.title-row{display:flex;align-items:baseline;gap:18px;margin-bottom:10px}
-.title-row .pname{font-weight:700;font-size:15px;white-space:nowrap}
-.title-row .role{flex:1;font-size:14px}
-.title-row .time{font-size:14px;white-space:nowrap}
-.line{margin:5px 0}
-.line b{font-weight:700}
+.title-row{display:flex;align-items:baseline;justify-content:space-between;gap:20px;
+  border-bottom:1px solid #d7dce3;padding-bottom:9px;margin-bottom:12px}
+.pname{font-weight:700;font-size:15px;color:#1f4e79;white-space:nowrap}
+.time{font-size:13.5px;color:#555;white-space:nowrap}
+.sec{margin:5px 0}
+.sec b{font-weight:700}
 a{color:#1a4fa0;text-decoration:none;word-break:break-all}
-.hl{margin:9px 0 3px}
-ul{margin:6px 0;padding-left:21px}
-li{margin:4px 0;line-height:1.72}
-li::marker{color:#333}
-strong{font-weight:700}
+ol{margin:8px 0 0;padding-left:25px}
+li{margin:5px 0;line-height:1.72}
 @media (max-width:860px){
   .paper{width:100%;margin:0;padding:24px 18px;box-shadow:none}
   .bar span{display:none}
-  .title-row{flex-wrap:wrap;gap:4px 16px}
+  .title-row{flex-wrap:wrap;gap:4px 12px}
 }
 @page{size:A4;margin:14mm}
 @media print{
   body{background:#fff;font-size:11.5pt}
   .bar{display:none!important}
   .paper{width:auto;min-height:0;margin:0;padding:0;box-shadow:none}
-  li,ul,.line,.title-row{page-break-inside:avoid}
+  li,ol,.sec,.title-row{page-break-inside:avoid}
 }
 </style>
 </head>
@@ -48,7 +45,7 @@ strong{font-weight:700}
 
 <div class="bar no-print">
   <b>项目经历 · 牛客简历格式</b>
-  <span>按截图排版：项目名 + 角色 + 时间 / 简介 / 地址 / 技术栈 / 技术亮点</span>
+  <span>项目名 + 时间 / 技术栈 / 项目描述 / 个人职责</span>
   <button onclick="window.print()">打印 / 存 PDF</button>
 </div>
 
@@ -56,26 +53,23 @@ strong{font-weight:700}
 
   <div class="title-row">
     <span class="pname">八通道尺寸测量上位机系统（TICP）</span>
-    <span class="role">上位机开发</span>
     <span class="time">2026.11 - 至今</span>
   </div>
 
-  <div class="line"><b>项目简介：</b>八通道尺寸测量上位机，面向设备采集与质量判定场景。基于 Modbus RTU 从下位机批量读取 8 路原始计数，经两点线性标定换算为物理量后按阈值做三态判定，实时驱动 8 张通道卡片与指示灯；支持 SQLite 入库、条件查询、合格率统计、CSV 导出与历史趋势曲线，独立走通「设备采集 → 标定判定 → 数据存储 → 质量追溯」完整闭环。</div>
+  <div class="sec"><b>技术栈：</b>C# / .NET 8 / WinForms / SunnyUI / NModbus / Modbus RTU / SQLite / ScottPlot 5 / SkiaSharp</div>
 
-  <div class="line"><b>项目地址：</b><a href="https://github.com/yijiedemotu/WinFormsProject.git">https://github.com/yijiedemotu/WinFormsProject.git</a></div>
+  <div class="sec"><b>项目描述：</b>面向八通道尺寸测量的上位机，基于 NModbus 通过串口读取下位机 8 路寄存器数据，完成标定换算、阈值判定、实时显示与数据入库；提供按时间和产品查询、合格率统计、CSV 导出与历史趋势曲线功能。</div>
 
-  <div class="line"><b>技术栈：</b>C#/.NET 8、WinForms、SunnyUI、NModbus、SerialPort、Microsoft.Data.Sqlite、ScottPlot、SkiaSharp、System.Text.Json、Git</div>
+  <div class="sec"><b>项目地址：</b><a href="https://github.com/yijiedemotu/WinFormsProject.git">https://github.com/yijiedemotu/WinFormsProject.git</a></div>
 
-  <div class="line hl"><b>技术亮点：</b></div>
-  <ul>
-    <li><strong>基于 NModbus + SerialPort 实现 Modbus RTU 采集，批量读取 8 路保持寄存器（0x03）</strong>，支持 ABCD / CDAB / BADC / DCBA 四种字节序转换，覆盖 float / double 等多类型解析。</li>
-    <li><strong>采用 Task.Run + CancellationTokenSource 异步轮询替代 WinForms.Timer</strong>，避免串口阻塞 UI 线程；实现 3s 间隔断线自动重连，以 volatile manualDisconnect 压制用户主动断开后的误重连，异常与超差日志按 10s 限流。</li>
-    <li><strong>设计 bool? 三态质量判定，区分「合格 / 超差 / 未标定」</strong>，避免未标定通道被误判为不合格；整体结论按「超差 &gt; 未标定 &gt; 合格」聚合，并记录具体超差通道号。</li>
-    <li><strong>以 oriData 原始快照重新判定后再入库</strong>，不信任可能因隐藏通道、切页而过期的界面显示值，保证 SQLite 中数据与判定结果同源；封装不依赖 WinForms 的纯逻辑判定服务，可脱离窗体与串口验证。</li>
-    <li><strong>实现 SQLite 幂等升级与 SQL 内聚合统计</strong>：通过 PRAGMA table_info 探测旧库列并 ALTER TABLE 补列、回填历史数据，无需删库即可升级；用 SUM(CASE WHEN) 在数据库侧计算合格率，避免全表载入内存。</li>
-    <li><strong>基于 ScottPlot 5 / SkiaSharp 实现历史趋势曲线</strong>，通过 Fonts.Detect + plot.Font.Set + Legend.FontName 修复中文字体缺字显示为方框的问题，并采用离屏 Render 出 PNG 完成无窗体验证。</li>
-    <li><strong>处理 WinForms 生命周期与跨线程细节</strong>：跨线程更新统一 BeginInvoke + IsDisposed / IsHandleCreated 校验；采集任务与定时器只在 Disposed 停止（切页换 Parent 会重建句柄并触发 HandleDestroyed），Load 加幂等保护，规避切页后采集永久停止。</li>
-  </ul>
+  <div class="sec" style="margin-top:8px"><b>个人职责：</b></div>
+  <ol>
+    <li>基于 C# / .NET 8 与 WinForms、SunnyUI 搭建项目框架，封装页面切换方法，完成数据测量、查询统计、趋势曲线、阈值设置四个页面的布局与控件绑定。</li>
+    <li>基于 NModbus 封装 Modbus RTU 通信类，实现串口连接、8 路保持寄存器批量读取与字节序转换；使用 Task + CancellationToken 做 1s 周期异步轮询，加入断线重连、超时设置与日志限流。</li>
+    <li>实现两点线性标定与阈值判定，用 bool? 区分合格、超差和未标定；采集线程写入原始数据与物理量数组，保存时取原始值快照重新计算后写入数据库。</li>
+    <li>使用 SQLite 建表并实现参数化增删改查，针对旧版本库缺列做表结构升级；实现按时间、产品的条件查询、合格率统计与 CSV 导出。</li>
+    <li>基于 ScottPlot 5 绘制历史趋势曲线，处理中文字体显示问题；处理跨线程访问控件、页面切换句柄重建导致采集中断等问题。</li>
+  </ol>
 
 </div>
 
