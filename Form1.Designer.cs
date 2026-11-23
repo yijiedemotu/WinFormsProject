@@ -46,7 +46,7 @@
             uiPanel1.Controls.Add(uiSymbolButton2);
             uiPanel1.Controls.Add(uiSymbolButton1);
             uiPanel1.Dock = DockStyle.Top;
-            uiPanel1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel1.Location = new Point(2, 36);
             uiPanel1.Margin = new Padding(4, 5, 4, 5);
             uiPanel1.MinimumSize = new Size(1, 1);
@@ -58,7 +58,7 @@
             // 
             // uiLight1
             // 
-            uiLight1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLight1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLight1.Location = new Point(977, 11);
             uiLight1.MinimumSize = new Size(1, 1);
             uiLight1.Name = "uiLight1";
@@ -71,7 +71,7 @@
             // uiSymbolButton4
             // 
             uiSymbolButton4.Dock = DockStyle.Left;
-            uiSymbolButton4.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiSymbolButton4.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiSymbolButton4.Location = new Point(516, 0);
             uiSymbolButton4.MinimumSize = new Size(1, 1);
             uiSymbolButton4.Name = "uiSymbolButton4";
@@ -79,13 +79,13 @@
             uiSymbolButton4.Symbol = 61546;
             uiSymbolButton4.TabIndex = 3;
             uiSymbolButton4.Text = "阈值设置";
-            uiSymbolButton4.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiSymbolButton4.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             uiSymbolButton4.Click += uiSymbolButton4_Click;
             // 
             // uiSymbolButton3
             // 
             uiSymbolButton3.Dock = DockStyle.Left;
-            uiSymbolButton3.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiSymbolButton3.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiSymbolButton3.Location = new Point(344, 0);
             uiSymbolButton3.MinimumSize = new Size(1, 1);
             uiSymbolButton3.Name = "uiSymbolButton3";
@@ -93,13 +93,13 @@
             uiSymbolButton3.Symbol = 61953;
             uiSymbolButton3.TabIndex = 2;
             uiSymbolButton3.Text = "趋势曲线";
-            uiSymbolButton3.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiSymbolButton3.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             uiSymbolButton3.Click += uiSymbolButton3_Click;
             // 
             // uiSymbolButton2
             // 
             uiSymbolButton2.Dock = DockStyle.Left;
-            uiSymbolButton2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiSymbolButton2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiSymbolButton2.Location = new Point(172, 0);
             uiSymbolButton2.MinimumSize = new Size(1, 1);
             uiSymbolButton2.Name = "uiSymbolButton2";
@@ -107,26 +107,26 @@
             uiSymbolButton2.Symbol = 61442;
             uiSymbolButton2.TabIndex = 1;
             uiSymbolButton2.Text = "查询统计";
-            uiSymbolButton2.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiSymbolButton2.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             uiSymbolButton2.Click += uiSymbolButton2_Click;
             // 
             // uiSymbolButton1
             // 
             uiSymbolButton1.Dock = DockStyle.Left;
-            uiSymbolButton1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiSymbolButton1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiSymbolButton1.Location = new Point(0, 0);
             uiSymbolButton1.MinimumSize = new Size(1, 1);
             uiSymbolButton1.Name = "uiSymbolButton1";
             uiSymbolButton1.Size = new Size(172, 54);
             uiSymbolButton1.TabIndex = 0;
             uiSymbolButton1.Text = "数据测量";
-            uiSymbolButton1.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiSymbolButton1.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             uiSymbolButton1.Click += uiSymbolButton1_Click;
             // 
             // uiPanel2
             // 
             uiPanel2.Dock = DockStyle.Fill;
-            uiPanel2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel2.Location = new Point(2, 90);
             uiPanel2.Margin = new Padding(4, 5, 4, 5);
             uiPanel2.MinimumSize = new Size(1, 1);

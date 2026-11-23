@@ -50,7 +50,7 @@
             uiPanel1.Controls.Add(uiDatePicker1);
             uiPanel1.Controls.Add(uiLabel1);
             uiPanel1.Dock = DockStyle.Top;
-            uiPanel1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel1.Location = new Point(0, 0);
             uiPanel1.Margin = new Padding(4, 5, 4, 5);
             uiPanel1.MinimumSize = new Size(1, 1);
@@ -61,7 +61,7 @@
             // 
             // uiLabel1
             // 
-            uiLabel1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel1.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel1.Location = new Point(31, 26);
             uiLabel1.Name = "uiLabel1";
@@ -73,7 +73,7 @@
             // 
             uiDatePicker1.DateCultureInfo = new System.Globalization.CultureInfo("");
             uiDatePicker1.FillColor = Color.White;
-            uiDatePicker1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiDatePicker1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiDatePicker1.Location = new Point(121, 26);
             uiDatePicker1.Margin = new Padding(4, 5, 4, 5);
             uiDatePicker1.MaxLength = 10;
@@ -93,7 +93,7 @@
             // 
             uiDatePicker2.DateCultureInfo = new System.Globalization.CultureInfo("");
             uiDatePicker2.FillColor = Color.White;
-            uiDatePicker2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiDatePicker2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiDatePicker2.Location = new Point(400, 26);
             uiDatePicker2.Margin = new Padding(4, 5, 4, 5);
             uiDatePicker2.MaxLength = 10;
@@ -111,7 +111,7 @@
             // 
             // uiLabel2
             // 
-            uiLabel2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel2.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel2.Location = new Point(310, 26);
             uiLabel2.Name = "uiLabel2";
@@ -121,7 +121,7 @@
             // 
             // uiLabel3
             // 
-            uiLabel3.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel3.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel3.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel3.Location = new Point(610, 26);
             uiLabel3.Name = "uiLabel3";
@@ -133,7 +133,7 @@
             // 
             uiComboBox1.DataSource = null;
             uiComboBox1.FillColor = Color.White;
-            uiComboBox1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiComboBox1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiComboBox1.ItemHoverColor = Color.FromArgb(155, 200, 255);
             uiComboBox1.ItemSelectForeColor = Color.FromArgb(235, 243, 255);
             uiComboBox1.Location = new Point(704, 26);
@@ -150,14 +150,14 @@
             // 
             // uiButton1
             // 
-            uiButton1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiButton1.Location = new Point(897, 26);
             uiButton1.MinimumSize = new Size(1, 1);
             uiButton1.Name = "uiButton1";
             uiButton1.Size = new Size(100, 23);
             uiButton1.TabIndex = 6;
             uiButton1.Text = "查询";
-            uiButton1.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton1.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             // 
             // formsPlot1
             // 

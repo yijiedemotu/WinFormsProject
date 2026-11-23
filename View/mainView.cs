@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using WinFormsApp3.Common;
 using WinFormsApp3.Model;
+using WinFormsApp3.Helper;
 
 namespace WinFormsApp3.View
 {
@@ -13,9 +14,8 @@ namespace WinFormsApp3.View
         //创建一个UILight的实例，用于显示连接状态
         private UILight uiLight1;
 
-
         //data里是下位机的数据
-        private ushort[] data = new ushort[8];
+        //private ushort[] data = new ushort[8];    已经用全局变量替代
 
         private BindingList<dataModel> bindingList = new BindingList<dataModel>();
 
@@ -33,7 +33,7 @@ namespace WinFormsApp3.View
 
 
         //创建一个Task类型的变量readTask，用于异步读取下位机数据
-        private Task readTask;
+        private Task? readTask;
         private CancellationTokenSource readCTS = new CancellationTokenSource();
 
         //`StartRead()` 是 UI 线程（mainView_Load 触发，Load 事件是 UI 线程）
@@ -49,7 +49,9 @@ namespace WinFormsApp3.View
                         if (mainCommon.modbusRtuClient.IsConnected)
                         {
                             ushort[] tempData = mainCommon.modbusRtuClient.ReadHoldingRegisters(0, 8);
-                            Array.Copy(tempData, data, tempData.Length);
+                            // ushort[] -> double[] 逐项赋值，避免 Array.Copy 的类型转换歧义
+                            for (int k = 0; k < tempData.Length && k < mainCommon.data.Length; k++)
+                                mainCommon.data[k] = tempData[k];
                             int i = 0;
                             foreach (var item in simpleViews)
                             {
@@ -71,9 +73,27 @@ namespace WinFormsApp3.View
 
 
 
+        /// <summary>填充串口下拉框，避免「下拉框没有东西」和 PortName 为空的异常。</summary>
+        private void FillPorts()
+        {
+            try
+            {
+                uiComboBox1.Items.Clear();
+                foreach (string port in gkHelper.ModbusRtuClient.GetAvailablePorts())
+                    uiComboBox1.Items.Add(port);
+                if (uiComboBox1.Items.Count > 0) uiComboBox1.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                // 枚举串口失败不能拖垮页面加载（如无串口驱动、非 Windows 运行时）
+                gkHelper.Log.Error("枚举串口失败", ex);
+            }
+        }
+
         //事件，创建8个simpleView
         private void mainView_Load(object sender, EventArgs e)
         {
+            FillPorts();
             for (int i = 0; i < 8; i++)
             {
                 //创建一个simpleView实例
@@ -99,13 +119,13 @@ namespace WinFormsApp3.View
             if (mainCommon.modbusRtuClient.IsConnected)
             {
                 //读取下位机的保持寄存器数据，地址为0，长度为8,并将读取到的数据存放在data数组中，如[0,1,2,3,4,5,6,7]
-                data = mainCommon.modbusRtuClient.ReadHoldingRegisters(0, 8);
+                 //data = mainCommon.modbusRtuClient.ReadHoldingRegisters(0, 8);
                 //定义一个变量i，用于遍历simpleViews集合中的simpleView实例
                 int i = 0;
                 foreach (var item in simpleViews)
                 {
                     //将存放在数组中的每一位数据传递给simpleView进行刷新
-                    item.refreshData(data[i]);
+                    //item.refreshData(data[i]);
                     i++;
                 }
             }
@@ -117,7 +137,13 @@ namespace WinFormsApp3.View
         private void uiButton1_Click(object sender, EventArgs e)
         {
             //获取下拉框中选中的值，并将其传递给modbusRtuClient进行连接
-            string comName = uiComboBox1.Text;
+            string comName = uiComboBox1.Text.Trim();
+            if (string.IsNullOrEmpty(comName))
+            {
+                MessageBox.Show("请先选择串口号", "提示",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             //当窗体加载时，拿到通讯对象modbusRtuClient，并传递给mainView、totalView、plotView、yvzhiView
             bool isConnected = mainCommon.modbusRtuClient.Connect(comName);
@@ -146,16 +172,19 @@ namespace WinFormsApp3.View
                 Id = bindingList.Count + 1,
                 testTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                 projectName = uiTextBox1.Text,
-                data1 = data[0].ToString(),
-                data2 = data[1].ToString(),
-                data3 = data[2].ToString(),
-                data4 = data[3].ToString(),
-                data5 = data[4].ToString(),
-                data6 = data[5].ToString(),
-                data7 = data[6].ToString(),
-                data8 = data[7].ToString()
+                data1 = mainCommon.data[0].ToString(),
+                data2 = mainCommon.data[1].ToString(),
+                data3 = mainCommon.data[2].ToString(),
+                data4 = mainCommon.data[3].ToString(),
+                data5 = mainCommon.data[4].ToString(),
+                data6 = mainCommon.data[5].ToString(),
+                data7 = mainCommon.data[6].ToString(),
+                data8 = mainCommon.data[7].ToString()
             };
             bindingList.Add(dataModel);
+
+            //将数据存入数据库
+            mainCommon.sqlHelper.Insert(dataModel);
         }
     }
 }

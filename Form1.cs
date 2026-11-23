@@ -1,6 +1,6 @@
 using gkHelper;
 using Sunny.UI;
-using WinFormsApp3.Common;
+using System.Windows.Forms;
 using WinFormsApp3.Helper;
 using WinFormsApp3.View;
 
@@ -9,57 +9,57 @@ namespace WinFormsApp3
     //窗体的大框架
     public partial class Form1 : UIForm
     {
+        // 页面延迟创建：启动时不一次 new 出全部 4 个页面，
+        // 避免 plotView 的 FormsPlot(ScottPlot/SkiaSharp) 和 totalView 的数据库查询
+        // 在 Form1 构造阶段就初始化 —— 任一环节抛异常都会让 Application.Run(new Form1()) 崩掉。
+        private mainView? mainView;
+        private totalView? totalView;
+        private plotView? plotView;
+        private yvzhiView? yvzhiView;
 
-        // 创建mainView的实例
-        private mainView mainView;
-
-        //Form1的构造函数
         public Form1()
         {
             InitializeComponent();
-
         }
 
         private void uiSymbolButton1_Click(object sender, EventArgs e)
         {
-            //当点击按钮时，调用FormShowHelper.formShow方法，将mainView嵌入到uiPanel1中
+            if (mainView == null) return;
             FormShowHelper.formShow(mainView, uiPanel2);
         }
+
         private void Form1_Load(object sender, EventArgs e)
         {
-            // 创建mainView的实例，并将uiLight1传递给mainView的构造函数
-            mainView = new mainView(uiLight1); 
-            //在窗体加载时，调用FormShowHelper.formShow方法，将mainView嵌入到uiPanel1中
+            // 默认显示数据测量页
+            mainView = new mainView(uiLight1);
             FormShowHelper.formShow(mainView, uiPanel2);
         }
-        private void Form1_Shown(object sender, EventArgs e)
-        {
-            //在窗体显示时，调用FormShowHelper.formShow方法，将mainView嵌入到uiPanel1中
-        }
 
-        // 创建totalView的实例
-        private totalView totalView = new totalView();
+        private void Form1_Shown(object sender, EventArgs e) { }
 
-        private void uiSymbolButton2_Click(object sender, EventArgs e)
-        {
-            //当点击按钮时，调用FormShowHelper.formShow方法，将totalView嵌入到uiPanel1中
-            FormShowHelper.formShow(totalView, uiPanel2);
-        }
+        private void uiSymbolButton2_Click(object sender, EventArgs e) =>
+            ShowPage(ref totalView, () => new totalView());
 
-        // 创建plotView的实例
-        private plotView plotView = new plotView();
-        private void uiSymbolButton3_Click(object sender, EventArgs e)
-        {
-            //当点击按钮时，调用FormShowHelper.formShow方法，将plotView嵌入到uiPanel1中
-            FormShowHelper.formShow(plotView, uiPanel2);
-        }
+        private void uiSymbolButton3_Click(object sender, EventArgs e) =>
+            ShowPage(ref plotView, () => new plotView());
 
-        // 创建yvzhiView的实例
-        private yvzhiView yvzhiView = new yvzhiView();
-        private void uiSymbolButton4_Click(object sender, EventArgs e)
+        private void uiSymbolButton4_Click(object sender, EventArgs e) =>
+            ShowPage(ref yvzhiView, () => new yvzhiView());
+
+        /// <summary>统一兜底：任何页面初始化失败只提示并记日志，不让整个程序崩掉。</summary>
+        private void ShowPage<T>(ref T? page, Func<T> factory) where T : UIPage
         {
-            //当点击按钮时，调用FormShowHelper.formShow方法，将yvzhiView嵌入到uiPanel1中
-            FormShowHelper.formShow(yvzhiView, uiPanel2);
+            try
+            {
+                page ??= factory();
+                FormShowHelper.formShow(page!, uiPanel2);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"打开 {typeof(T).Name} 失败", ex);
+                MessageBox.Show($"打开页面失败：{ex.Message}\n详细堆栈已写入 Logs 目录。",
+                    "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

@@ -11,88 +11,49 @@ namespace WinFormsApp3.Helper
 {
     public class SqlHelper
     {
-        /// <summary>统一的时间格式，保证字符串排序等价于时间排序。</summary>
-        public const string TimeFormat = "yyyy-MM-dd HH:mm:ss";
-
         private readonly string _connectionString;
 
-        public SqlHelper(string dbPath = "data.db")
+        public SqlHelper(string dbPath = "")
         {
-            string fullPath = Path.IsPathRooted(dbPath)
-                ? dbPath
-                : Path.Combine(AppContext.BaseDirectory, dbPath);
-            _connectionString = $"Data Source={fullPath}";
-            EnsureCreated();
+            // 固定在程序基目录：VS 调试 / dotnet run / 双击 exe 都指向同一个库
+            string path = string.IsNullOrWhiteSpace(dbPath)
+                ? Path.Combine(AppContext.BaseDirectory, "data.db")
+                : dbPath;
+            _connectionString = $"Data Source={path}";
+            // 自动建表（幂等），避免干净环境启动时报 no such table: DataModel
+            InitDatabase();
         }
 
         /// <summary>
-        /// 建表 + 一次性迁移历史数据的时间格式。可重复调用（幂等）。
+        /// 初始化数据库和表
         /// </summary>
-        public void EnsureCreated()
+        private void InitDatabase()
         {
             using var connection = new SqliteConnection(_connectionString);
             connection.Open();
 
-            using (var cmd = connection.CreateCommand())
-            {
-                cmd.CommandText = @"
-                CREATE TABLE IF NOT EXISTS DataModel (
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    testTime TEXT,
-                    projectName TEXT,
-                    data1 TEXT,
-                    data2 TEXT,
-                    data3 TEXT,
-                    data4 TEXT,
-                    data5 TEXT,
-                    data6 TEXT,
-                    data7 TEXT,
-                    data8 TEXT
-                );";
-                cmd.ExecuteNonQuery();
-            }
-
-            MigrateLegacyTimeFormat(connection);
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = @"
+            CREATE TABLE IF NOT EXISTS DataModel (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                testTime TEXT,
+                projectName TEXT,
+                data1 TEXT,
+                data2 TEXT,
+                data3 TEXT,
+                data4 TEXT,
+                data5 TEXT,
+                data6 TEXT,
+                data7 TEXT,
+                data8 TEXT
+            );
+        ";
+            cmd.ExecuteNonQuery();
         }
 
         /// <summary>
-        /// 旧版本用 DateTime.Now.ToString() 写入（形如 2026/10/27 10:50:46），
-        /// 与新格式混排会导致 ORDER BY 和范围查询出错，这里统一迁移一次。
+        /// 新增
         /// </summary>
-        private void MigrateLegacyTimeFormat(SqliteConnection connection)
-        {
-            var legacy = new List<(long Id, string Raw)>();
-            using (var cmd = connection.CreateCommand())
-            {
-                cmd.CommandText = "SELECT Id, testTime FROM DataModel WHERE testTime LIKE '%/%'";
-                using var reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    legacy.Add((Convert.ToInt64(reader["Id"]), reader["testTime"] as string ?? ""));
-                }
-            }
-
-            foreach (var (id, raw) in legacy)
-            {
-                if (!DateTime.TryParse(raw, CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime parsed)
-                    && !DateTime.TryParse(raw, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
-                {
-                    continue;
-                }
-
-                using var update = connection.CreateCommand();
-                update.CommandText = "UPDATE DataModel SET testTime = @t WHERE Id = @id";
-                update.Parameters.AddWithValue("@t", parsed.ToString(TimeFormat, CultureInfo.InvariantCulture));
-                update.Parameters.AddWithValue("@id", id);
-                update.ExecuteNonQuery();
-            }
-
-            if (legacy.Count > 0)
-            {
-                gkHelper.Log.Info($"已统一 {legacy.Count} 条历史记录的时间格式");
-            }
-        }
-
         public int Insert(dataModel model)
         {
             using var connection = new SqliteConnection(_connectionString);
@@ -104,12 +65,18 @@ namespace WinFormsApp3.Helper
             (testTime, projectName, data1, data2, data3, data4, data5, data6, data7, data8)
             VALUES
             (@testTime, @projectName, @data1, @data2, @data3, @data4, @data5, @data6, @data7, @data8);
-            SELECT last_insert_rowid();";
+
+            SELECT last_insert_rowid();
+        ";
 
             AddParameters(cmd, model);
-            return Convert.ToInt32(cmd.ExecuteScalar(), CultureInfo.InvariantCulture);
+
+            return Convert.ToInt32(cmd.ExecuteScalar());
         }
 
+        /// <summary>
+        /// 更新
+        /// </summary>
         public int Update(dataModel model)
         {
             using var connection = new SqliteConnection(_connectionString);
@@ -128,13 +95,18 @@ namespace WinFormsApp3.Helper
                 data6 = @data6,
                 data7 = @data7,
                 data8 = @data8
-            WHERE Id = @Id";
+            WHERE Id = @Id
+        ";
 
             cmd.Parameters.AddWithValue("@Id", model.Id);
             AddParameters(cmd, model);
+
             return cmd.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// 删除
+        /// </summary>
         public int Delete(int id)
         {
             using var connection = new SqliteConnection(_connectionString);
@@ -143,9 +115,13 @@ namespace WinFormsApp3.Helper
             var cmd = connection.CreateCommand();
             cmd.CommandText = "DELETE FROM DataModel WHERE Id = @Id";
             cmd.Parameters.AddWithValue("@Id", id);
+
             return cmd.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// 根据 Id 查询（字段允许为 null）
+        /// </summary>
         public dataModel? GetById(int id)
         {
             using var connection = new SqliteConnection(_connectionString);
@@ -156,98 +132,156 @@ namespace WinFormsApp3.Helper
             cmd.Parameters.AddWithValue("@Id", id);
 
             using var reader = cmd.ExecuteReader();
-            return reader.Read() ? MapToModel(reader) : null;
+            if (reader.Read())
+            {
+                return MapToModel(reader);
+            }
+
+            return null;
         }
 
+        /// <summary>
+        /// 查询全部
+        /// </summary>
         public List<dataModel> GetAll()
         {
             var list = new List<dataModel>();
+
             using var connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             var cmd = connection.CreateCommand();
-            cmd.CommandText = "SELECT * FROM DataModel ORDER BY testTime, Id";
+            cmd.CommandText = "SELECT * FROM DataModel";
 
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
                 list.Add(MapToModel(reader));
             }
+
             return list;
         }
 
-        /// <summary>条件可空；值一律参数化，防止注入。</summary>
+        /// <summary>库中最早 / 最晚检测时间，供日期控件设置默认区间。</summary>
+        public (DateTime? min, DateTime? max) GetTimeRange()
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = "SELECT MIN(testTime), MAX(testTime) FROM DataModel";
+            using var reader = cmd.ExecuteReader();
+            if (!reader.Read()) return (null, null);
+
+            DateTime? min = Parse(reader.IsDBNull(0) ? "" : reader.GetString(0));
+            DateTime? max = Parse(reader.IsDBNull(1) ? "" : reader.GetString(1));
+            return (min, max);
+        }
+
+        private static DateTime? Parse(string s) =>
+            DateTime.TryParseExact(s, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out DateTime t) ? t : null;
+
+        /// <summary>查询库里出现过的产品名称，供查询页下拉框使用。</summary>
+        public List<string> GetProjectNames()
+        {
+            var list = new List<string>();
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+            var cmd = connection.CreateCommand();
+            cmd.CommandText =
+                "SELECT DISTINCT projectName FROM DataModel " +
+                "WHERE projectName IS NOT NULL AND TRIM(projectName) <> '' " +
+                "ORDER BY projectName";
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read()) list.Add(reader["projectName"] as string ?? "");
+            return list;
+        }
+
+        /// <summary>
+        /// 根据多个可选条件查询（所有条件均可为 null 或空字符串）
+        /// </summary>
+        /// <param name="startTime">起始时间（含边界），可为空</param>
+        /// <param name="endTime">结束时间（含边界），可为空</param>
+        /// <param name="projectName">项目名称（精确匹配），可为空</param>
+        /// <returns>符合条件的记录列表</returns>
+        private const string TimeFormat = "yyyy-MM-dd HH:mm:ss";
+
+        // 返回 null = 不加这个条件；任何写不规范的入参都不会拼进 SQL
+        private static string? NormalizeTime(string? text, bool isEnd)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return null;
+            string s = text.Trim().Replace('/', '-').Replace('.', '-');
+            if (!DateTime.TryParse(s, CultureInfo.InvariantCulture,
+                                   DateTimeStyles.None, out DateTime dt))
+                return null;                                     // 解析失败当「无条件」
+            if (isEnd && s.Length <= 10)                          // 只给日期 → 补到当天 23:59:59
+                dt = dt.Date.AddDays(1).AddSeconds(-1);
+            return dt.ToString(TimeFormat, CultureInfo.InvariantCulture);
+        }
+
         public List<dataModel> GetByConditions(string? startTime, string? endTime, string? projectName)
         {
             var list = new List<dataModel>();
+            string? start = NormalizeTime(startTime, false);
+            string? end = NormalizeTime(endTime, true);
+            string? proj = string.IsNullOrWhiteSpace(projectName) ? null : projectName.Trim();
+
             using var connection = new SqliteConnection(_connectionString);
             connection.Open();
 
-            var conditions = new List<string>();
-            var parameters = new Dictionary<string, object>();
-
-            if (!string.IsNullOrWhiteSpace(startTime))
-            {
-                conditions.Add("testTime >= @startTime");
-                parameters["@startTime"] = startTime;
-            }
-            if (!string.IsNullOrWhiteSpace(endTime))
-            {
-                conditions.Add("testTime <= @endTime");
-                parameters["@endTime"] = endTime;
-            }
-            if (!string.IsNullOrWhiteSpace(projectName))
-            {
-                conditions.Add("projectName = @projectName");
-                parameters["@projectName"] = projectName;
-            }
-
-            string whereClause = conditions.Count > 0
-                ? "WHERE " + string.Join(" AND ", conditions)
-                : "";
-
             var cmd = connection.CreateCommand();
-            cmd.CommandText = $"SELECT * FROM DataModel {whereClause} ORDER BY testTime, Id";
-            foreach (var param in parameters)
-            {
-                cmd.Parameters.AddWithValue(param.Key, param.Value);
-            }
+            var conditions = new List<string>();
+            if (start != null) { conditions.Add("testTime >= @startTime"); cmd.Parameters.AddWithValue("@startTime", start); }
+            if (end != null) { conditions.Add("testTime <= @endTime"); cmd.Parameters.AddWithValue("@endTime", end); }
+            if (proj != null) { conditions.Add("projectName = @projectName"); cmd.Parameters.AddWithValue("@projectName", proj); }
+
+            cmd.CommandText = "SELECT * FROM DataModel"
+                + (conditions.Count > 0 ? " WHERE " + string.Join(" AND ", conditions) : "")
+                + " ORDER BY testTime";
+
+            gkHelper.Log.Info($"查询 SQL: {cmd.CommandText} | start={start} end={end} project={proj}");
 
             using var reader = cmd.ExecuteReader();
-            while (reader.Read())
-            {
-                list.Add(MapToModel(reader));
-            }
+            while (reader.Read()) list.Add(MapToModel(reader));
             return list;
         }
 
-        private static dataModel MapToModel(SqliteDataReader reader) => new()
+        /// <summary>
+        /// 映射 DataReader → Model（每个字段都允许为 null）
+        /// </summary>
+        private dataModel MapToModel(SqliteDataReader reader)
         {
-            Id = reader["Id"] == DBNull.Value ? 0 : Convert.ToInt32(reader["Id"], CultureInfo.InvariantCulture),
-            testTime = reader["testTime"] as string ?? "",
-            projectName = reader["projectName"] as string ?? "",
-            data1 = reader["data1"] as string ?? "",
-            data2 = reader["data2"] as string ?? "",
-            data3 = reader["data3"] as string ?? "",
-            data4 = reader["data4"] as string ?? "",
-            data5 = reader["data5"] as string ?? "",
-            data6 = reader["data6"] as string ?? "",
-            data7 = reader["data7"] as string ?? "",
-            data8 = reader["data8"] as string ?? ""
-        };
+            return new dataModel
+            {
+                Id = reader["Id"] == DBNull.Value ? 0 : Convert.ToInt32(reader["Id"]),
+                testTime = reader["testTime"] as string ?? "",
+                projectName = reader["projectName"] as string ?? "",
+                data1 = reader["data1"] as string ?? "",
+                data2 = reader["data2"] as string ?? "",
+                data3 = reader["data3"] as string ?? "",
+                data4 = reader["data4"] as string ?? "",
+                data5 = reader["data5"] as string ?? "",
+                data6 = reader["data6"] as string ?? "",
+                data7 = reader["data7"] as string ?? "",
+                data8 = reader["data8"] as string ?? ""
+            };
+        }
 
-        private static void AddParameters(SqliteCommand cmd, dataModel model)
+        /// <summary>
+        /// 添加参数（允许 null）
+        /// </summary>
+        private void AddParameters(SqliteCommand cmd, dataModel model)
         {
-            cmd.Parameters.AddWithValue("@testTime", (object?)model.testTime ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@projectName", (object?)model.projectName ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@data1", (object?)model.data1 ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@data2", (object?)model.data2 ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@data3", (object?)model.data3 ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@data4", (object?)model.data4 ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@data5", (object?)model.data5 ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@data6", (object?)model.data6 ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@data7", (object?)model.data7 ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@data8", (object?)model.data8 ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@testTime", model.testTime ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@projectName", model.projectName ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@data1", model.data1 ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@data2", model.data2 ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@data3", model.data3 ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@data4", model.data4 ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@data5", model.data5 ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@data6", model.data6 ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@data7", model.data7 ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@data8", model.data8 ?? (object)DBNull.Value);
         }
     }
 }

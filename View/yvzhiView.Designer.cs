@@ -98,7 +98,7 @@
             // 
             uiPanel1.Controls.Add(uiTableLayoutPanel2);
             uiPanel1.Dock = DockStyle.Top;
-            uiPanel1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel1.Location = new Point(0, 0);
             uiPanel1.Margin = new Padding(4, 5, 4, 5);
             uiPanel1.MinimumSize = new Size(1, 1);
@@ -139,7 +139,7 @@
             // uiPanel12
             // 
             uiPanel12.Dock = DockStyle.Fill;
-            uiPanel12.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel12.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel12.Location = new Point(921, 5);
             uiPanel12.Margin = new Padding(4, 5, 4, 5);
             uiPanel12.MinimumSize = new Size(1, 1);
@@ -152,7 +152,7 @@
             // uiPanel11
             // 
             uiPanel11.Dock = DockStyle.Fill;
-            uiPanel11.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel11.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel11.Location = new Point(790, 5);
             uiPanel11.Margin = new Padding(4, 5, 4, 5);
             uiPanel11.MinimumSize = new Size(1, 1);
@@ -165,7 +165,7 @@
             // uiPanel10
             // 
             uiPanel10.Dock = DockStyle.Fill;
-            uiPanel10.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel10.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel10.Location = new Point(659, 5);
             uiPanel10.Margin = new Padding(4, 5, 4, 5);
             uiPanel10.MinimumSize = new Size(1, 1);
@@ -178,7 +178,7 @@
             // uiPanel9
             // 
             uiPanel9.Dock = DockStyle.Fill;
-            uiPanel9.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel9.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel9.Location = new Point(528, 5);
             uiPanel9.Margin = new Padding(4, 5, 4, 5);
             uiPanel9.MinimumSize = new Size(1, 1);
@@ -191,7 +191,7 @@
             // uiPanel8
             // 
             uiPanel8.Dock = DockStyle.Fill;
-            uiPanel8.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel8.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel8.Location = new Point(397, 5);
             uiPanel8.Margin = new Padding(4, 5, 4, 5);
             uiPanel8.MinimumSize = new Size(1, 1);
@@ -204,7 +204,7 @@
             // uiPanel7
             // 
             uiPanel7.Dock = DockStyle.Fill;
-            uiPanel7.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel7.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel7.Location = new Point(266, 5);
             uiPanel7.Margin = new Padding(4, 5, 4, 5);
             uiPanel7.MinimumSize = new Size(1, 1);
@@ -217,7 +217,7 @@
             // uiPanel6
             // 
             uiPanel6.Dock = DockStyle.Fill;
-            uiPanel6.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel6.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel6.Location = new Point(135, 5);
             uiPanel6.Margin = new Padding(4, 5, 4, 5);
             uiPanel6.MinimumSize = new Size(1, 1);
@@ -230,7 +230,7 @@
             // uiPanel5
             // 
             uiPanel5.Dock = DockStyle.Fill;
-            uiPanel5.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel5.Font = new Font("宋体", 16F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel5.Location = new Point(4, 5);
             uiPanel5.Margin = new Padding(4, 5, 4, 5);
             uiPanel5.MinimumSize = new Size(1, 1);
@@ -239,12 +239,13 @@
             uiPanel5.TabIndex = 0;
             uiPanel5.Text = "通道1";
             uiPanel5.TextAlignment = ContentAlignment.MiddleCenter;
+            uiPanel5.Click += uiPanel5_Click;
             // 
             // uiPanel2
             // 
             uiPanel2.Controls.Add(uiButton1);
             uiPanel2.Dock = DockStyle.Bottom;
-            uiPanel2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel2.Location = new Point(0, 549);
             uiPanel2.Margin = new Padding(4, 5, 4, 5);
             uiPanel2.MinimumSize = new Size(1, 1);
@@ -256,14 +257,14 @@
             // 
             // uiButton1
             // 
-            uiButton1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiButton1.Location = new Point(463, 17);
             uiButton1.MinimumSize = new Size(1, 1);
             uiButton1.Name = "uiButton1";
             uiButton1.Size = new Size(121, 35);
             uiButton1.TabIndex = 0;
             uiButton1.Text = "确认";
-            uiButton1.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton1.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             // 
             // uiTableLayoutPanel1
             // 
@@ -288,7 +289,7 @@
             uiPanel4.Controls.Add(uiLabel8);
             uiPanel4.Controls.Add(uiButton2);
             uiPanel4.Dock = DockStyle.Fill;
-            uiPanel4.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel4.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel4.Location = new Point(529, 5);
             uiPanel4.Margin = new Padding(4, 5, 4, 5);
             uiPanel4.MinimumSize = new Size(1, 1);
@@ -307,7 +308,7 @@
             uiPanel13.Controls.Add(uiLabel9);
             uiPanel13.Controls.Add(uiButton3);
             uiPanel13.Dock = DockStyle.Fill;
-            uiPanel13.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel13.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel13.Location = new Point(0, 0);
             uiPanel13.Margin = new Padding(4, 5, 4, 5);
             uiPanel13.MinimumSize = new Size(1, 1);
@@ -326,7 +327,7 @@
             uiPanel14.Controls.Add(uiLabel12);
             uiPanel14.Controls.Add(uiButton4);
             uiPanel14.Dock = DockStyle.Fill;
-            uiPanel14.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel14.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel14.Location = new Point(0, 0);
             uiPanel14.Margin = new Padding(4, 5, 4, 5);
             uiPanel14.MinimumSize = new Size(1, 1);
@@ -349,7 +350,7 @@
             uiPanel15.Controls.Add(uiLabel14);
             uiPanel15.Controls.Add(uiButton5);
             uiPanel15.Dock = DockStyle.Fill;
-            uiPanel15.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel15.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel15.Location = new Point(0, 0);
             uiPanel15.Margin = new Padding(4, 5, 4, 5);
             uiPanel15.MinimumSize = new Size(1, 1);
@@ -361,7 +362,7 @@
             // 
             // uiButton6
             // 
-            uiButton6.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton6.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiButton6.Location = new Point(392, 178);
             uiButton6.MinimumSize = new Size(1, 1);
             uiButton6.Name = "uiButton6";
@@ -369,11 +370,11 @@
             uiButton6.Size = new Size(118, 37);
             uiButton6.TabIndex = 10;
             uiButton6.Text = "确认刀补";
-            uiButton6.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton6.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             // 
             // uiTextBox16
             // 
-            uiTextBox16.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox16.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox16.Location = new Point(200, 286);
             uiTextBox16.Margin = new Padding(4, 5, 4, 5);
             uiTextBox16.MinimumSize = new Size(1, 16);
@@ -387,7 +388,7 @@
             // 
             // uiLabel16
             // 
-            uiLabel16.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel16.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel16.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel16.Location = new Point(54, 286);
             uiLabel16.Name = "uiLabel16";
@@ -397,7 +398,7 @@
             // 
             // uiTextBox17
             // 
-            uiTextBox17.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox17.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox17.Location = new Point(200, 227);
             uiTextBox17.Margin = new Padding(4, 5, 4, 5);
             uiTextBox17.MinimumSize = new Size(1, 16);
@@ -411,7 +412,7 @@
             // 
             // uiLabel17
             // 
-            uiLabel17.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel17.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel17.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel17.Location = new Point(54, 227);
             uiLabel17.Name = "uiLabel17";
@@ -421,7 +422,7 @@
             // 
             // uiTextBox13
             // 
-            uiTextBox13.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox13.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox13.Location = new Point(200, 178);
             uiTextBox13.Margin = new Padding(4, 5, 4, 5);
             uiTextBox13.MinimumSize = new Size(1, 16);
@@ -435,7 +436,7 @@
             // 
             // uiLabel13
             // 
-            uiLabel13.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel13.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel13.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel13.Location = new Point(88, 178);
             uiLabel13.Name = "uiLabel13";
@@ -445,7 +446,7 @@
             // 
             // uiTextBox14
             // 
-            uiTextBox14.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox14.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox14.Location = new Point(200, 119);
             uiTextBox14.Margin = new Padding(4, 5, 4, 5);
             uiTextBox14.MinimumSize = new Size(1, 16);
@@ -459,7 +460,7 @@
             // 
             // uiLabel14
             // 
-            uiLabel14.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel14.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel14.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel14.Location = new Point(88, 119);
             uiLabel14.Name = "uiLabel14";
@@ -470,7 +471,7 @@
             // uiButton5
             // 
             uiButton5.Enabled = false;
-            uiButton5.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton5.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiButton5.Location = new Point(211, 38);
             uiButton5.MinimumSize = new Size(1, 1);
             uiButton5.Name = "uiButton5";
@@ -478,11 +479,11 @@
             uiButton5.Size = new Size(100, 35);
             uiButton5.TabIndex = 0;
             uiButton5.Text = "补偿值";
-            uiButton5.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton5.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             // 
             // uiTextBox11
             // 
-            uiTextBox11.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox11.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox11.Location = new Point(200, 168);
             uiTextBox11.Margin = new Padding(4, 5, 4, 5);
             uiTextBox11.MinimumSize = new Size(1, 16);
@@ -496,7 +497,7 @@
             // 
             // uiLabel11
             // 
-            uiLabel11.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel11.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel11.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel11.Location = new Point(88, 168);
             uiLabel11.Name = "uiLabel11";
@@ -506,7 +507,7 @@
             // 
             // uiTextBox12
             // 
-            uiTextBox12.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox12.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox12.Location = new Point(200, 119);
             uiTextBox12.Margin = new Padding(4, 5, 4, 5);
             uiTextBox12.MinimumSize = new Size(1, 16);
@@ -520,7 +521,7 @@
             // 
             // uiLabel12
             // 
-            uiLabel12.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel12.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel12.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel12.Location = new Point(88, 119);
             uiLabel12.Name = "uiLabel12";
@@ -531,7 +532,7 @@
             // uiButton4
             // 
             uiButton4.Enabled = false;
-            uiButton4.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton4.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiButton4.Location = new Point(211, 38);
             uiButton4.MinimumSize = new Size(1, 1);
             uiButton4.Name = "uiButton4";
@@ -539,11 +540,11 @@
             uiButton4.Size = new Size(100, 35);
             uiButton4.TabIndex = 0;
             uiButton4.Text = "补偿值";
-            uiButton4.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton4.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             // 
             // uiTextBox10
             // 
-            uiTextBox10.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox10.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox10.Location = new Point(200, 168);
             uiTextBox10.Margin = new Padding(4, 5, 4, 5);
             uiTextBox10.MinimumSize = new Size(1, 16);
@@ -557,7 +558,7 @@
             // 
             // uiLabel10
             // 
-            uiLabel10.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel10.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel10.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel10.Location = new Point(88, 168);
             uiLabel10.Name = "uiLabel10";
@@ -567,7 +568,7 @@
             // 
             // uiTextBox9
             // 
-            uiTextBox9.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox9.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox9.Location = new Point(200, 119);
             uiTextBox9.Margin = new Padding(4, 5, 4, 5);
             uiTextBox9.MinimumSize = new Size(1, 16);
@@ -581,7 +582,7 @@
             // 
             // uiLabel9
             // 
-            uiLabel9.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel9.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel9.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel9.Location = new Point(88, 119);
             uiLabel9.Name = "uiLabel9";
@@ -592,7 +593,7 @@
             // uiButton3
             // 
             uiButton3.Enabled = false;
-            uiButton3.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton3.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiButton3.Location = new Point(211, 38);
             uiButton3.MinimumSize = new Size(1, 1);
             uiButton3.Name = "uiButton3";
@@ -600,11 +601,11 @@
             uiButton3.Size = new Size(100, 35);
             uiButton3.TabIndex = 0;
             uiButton3.Text = "补偿值";
-            uiButton3.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton3.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             // 
             // uiTextBox8
             // 
-            uiTextBox8.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox8.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox8.Location = new Point(211, 119);
             uiTextBox8.Margin = new Padding(4, 5, 4, 5);
             uiTextBox8.MinimumSize = new Size(1, 16);
@@ -618,7 +619,7 @@
             // 
             // uiLabel8
             // 
-            uiLabel8.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel8.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel8.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel8.Location = new Point(88, 119);
             uiLabel8.Name = "uiLabel8";
@@ -629,7 +630,7 @@
             // uiButton2
             // 
             uiButton2.Enabled = false;
-            uiButton2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiButton2.Location = new Point(211, 38);
             uiButton2.MinimumSize = new Size(1, 1);
             uiButton2.Name = "uiButton2";
@@ -637,7 +638,7 @@
             uiButton2.Size = new Size(100, 35);
             uiButton2.TabIndex = 0;
             uiButton2.Text = "补偿值";
-            uiButton2.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton2.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             // 
             // uiPanel3
             // 
@@ -656,7 +657,7 @@
             uiPanel3.Controls.Add(uiTextBox1);
             uiPanel3.Controls.Add(uiLabel1);
             uiPanel3.Dock = DockStyle.Fill;
-            uiPanel3.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel3.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel3.Location = new Point(4, 5);
             uiPanel3.Margin = new Padding(4, 5, 4, 5);
             uiPanel3.MinimumSize = new Size(1, 1);
@@ -668,7 +669,7 @@
             // 
             // uiTextBox7
             // 
-            uiTextBox7.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox7.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox7.Location = new Point(197, 331);
             uiTextBox7.Margin = new Padding(4, 5, 4, 5);
             uiTextBox7.MinimumSize = new Size(1, 16);
@@ -682,7 +683,7 @@
             // 
             // uiLabel7
             // 
-            uiLabel7.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel7.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel7.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel7.Location = new Point(74, 331);
             uiLabel7.Name = "uiLabel7";
@@ -692,7 +693,7 @@
             // 
             // uiTextBox6
             // 
-            uiTextBox6.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox6.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox6.Location = new Point(197, 275);
             uiTextBox6.Margin = new Padding(4, 5, 4, 5);
             uiTextBox6.MinimumSize = new Size(1, 16);
@@ -706,7 +707,7 @@
             // 
             // uiLabel6
             // 
-            uiLabel6.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel6.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel6.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel6.Location = new Point(74, 275);
             uiLabel6.Name = "uiLabel6";
@@ -716,7 +717,7 @@
             // 
             // uiTextBox5
             // 
-            uiTextBox5.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox5.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox5.Location = new Point(197, 227);
             uiTextBox5.Margin = new Padding(4, 5, 4, 5);
             uiTextBox5.MinimumSize = new Size(1, 16);
@@ -730,7 +731,7 @@
             // 
             // uiLabel5
             // 
-            uiLabel5.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel5.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel5.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel5.Location = new Point(27, 227);
             uiLabel5.Name = "uiLabel5";
@@ -740,7 +741,7 @@
             // 
             // uiTextBox4
             // 
-            uiTextBox4.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox4.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox4.Location = new Point(197, 179);
             uiTextBox4.Margin = new Padding(4, 5, 4, 5);
             uiTextBox4.MinimumSize = new Size(1, 16);
@@ -754,7 +755,7 @@
             // 
             // uiLabel4
             // 
-            uiLabel4.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel4.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel4.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel4.Location = new Point(27, 179);
             uiLabel4.Name = "uiLabel4";
@@ -764,7 +765,7 @@
             // 
             // uiTextBox3
             // 
-            uiTextBox3.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox3.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox3.Location = new Point(197, 130);
             uiTextBox3.Margin = new Padding(4, 5, 4, 5);
             uiTextBox3.MinimumSize = new Size(1, 16);
@@ -778,17 +779,17 @@
             // 
             // uiLabel3
             // 
-            uiLabel3.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel3.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel3.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel3.Location = new Point(44, 130);
             uiLabel3.Name = "uiLabel3";
             uiLabel3.Size = new Size(180, 26);
             uiLabel3.TabIndex = 5;
-            uiLabel3.Text = "量具标准件下限/mm：";
+            uiLabel3.Text = "量具标准件下限：";
             // 
             // uiTextBox2
             // 
-            uiTextBox2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox2.Location = new Point(197, 78);
             uiTextBox2.Margin = new Padding(4, 5, 4, 5);
             uiTextBox2.MinimumSize = new Size(1, 16);
@@ -802,17 +803,17 @@
             // 
             // uiLabel2
             // 
-            uiLabel2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel2.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel2.Location = new Point(44, 78);
             uiLabel2.Name = "uiLabel2";
             uiLabel2.Size = new Size(168, 26);
             uiLabel2.TabIndex = 3;
-            uiLabel2.Text = "量具标准件上限/mm：";
+            uiLabel2.Text = "量具标准件上限：";
             // 
             // uiTextBox1
             // 
-            uiTextBox1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox1.Location = new Point(197, 27);
             uiTextBox1.Margin = new Padding(4, 5, 4, 5);
             uiTextBox1.MinimumSize = new Size(1, 16);
@@ -826,7 +827,7 @@
             // 
             // uiLabel1
             // 
-            uiLabel1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLabel1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiLabel1.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel1.Location = new Point(74, 27);
             uiLabel1.Name = "uiLabel1";

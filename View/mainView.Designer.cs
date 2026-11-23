@@ -71,7 +71,7 @@
             uiPanel1.Controls.Add(uiComboBox1);
             uiPanel1.Controls.Add(uiButton1);
             uiPanel1.Dock = DockStyle.Top;
-            uiPanel1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel1.Location = new Point(0, 0);
             uiPanel1.Margin = new Padding(4, 5, 4, 5);
             uiPanel1.MinimumSize = new Size(1, 1);
@@ -83,30 +83,30 @@
             // 
             // uiButton3
             // 
-            uiButton3.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton3.Location = new Point(783, 5);
+            uiButton3.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            uiButton3.Location = new Point(836, 5);
             uiButton3.MinimumSize = new Size(1, 1);
             uiButton3.Name = "uiButton3";
             uiButton3.Size = new Size(128, 28);
             uiButton3.TabIndex = 7;
             uiButton3.Text = "保存数据";
-            uiButton3.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton3.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             uiButton3.Click += uiButton3_Click;
             // 
             // uiButton2
             // 
-            uiButton2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton2.Location = new Point(641, 5);
+            uiButton2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            uiButton2.Location = new Point(663, 5);
             uiButton2.MinimumSize = new Size(1, 1);
             uiButton2.Name = "uiButton2";
             uiButton2.Size = new Size(136, 28);
             uiButton2.TabIndex = 6;
             uiButton2.Text = "隐藏通道";
-            uiButton2.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton2.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             // 
             // uiLabel3
             // 
-            uiLabel3.Font = new Font("宋体", 12F, FontStyle.Bold, GraphicsUnit.Point, 134);
+            uiLabel3.Font = new Font("宋体", 12F, FontStyle.Bold, GraphicsUnit.Point);
             uiLabel3.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel3.Location = new Point(259, 9);
             uiLabel3.Name = "uiLabel3";
@@ -116,7 +116,7 @@
             // 
             // uiLabel2
             // 
-            uiLabel2.Font = new Font("宋体", 12F, FontStyle.Bold, GraphicsUnit.Point, 134);
+            uiLabel2.Font = new Font("宋体", 12F, FontStyle.Bold, GraphicsUnit.Point);
             uiLabel2.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel2.Location = new Point(167, 8);
             uiLabel2.Name = "uiLabel2";
@@ -126,7 +126,7 @@
             // 
             // uiLabel1
             // 
-            uiLabel1.Font = new Font("宋体", 12F, FontStyle.Bold, GraphicsUnit.Point, 134);
+            uiLabel1.Font = new Font("宋体", 12F, FontStyle.Bold, GraphicsUnit.Point);
             uiLabel1.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel1.Location = new Point(3, 9);
             uiLabel1.Name = "uiLabel1";
@@ -136,7 +136,7 @@
             // 
             // uiTextBox1
             // 
-            uiTextBox1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox1.Location = new Point(91, 5);
             uiTextBox1.Margin = new Padding(4, 5, 4, 5);
             uiTextBox1.MinimumSize = new Size(1, 16);
@@ -145,7 +145,6 @@
             uiTextBox1.ShowText = false;
             uiTextBox1.Size = new Size(72, 29);
             uiTextBox1.TabIndex = 2;
-            uiTextBox1.Text = "请输入";
             uiTextBox1.TextAlignment = ContentAlignment.MiddleLeft;
             uiTextBox1.Watermark = "";
             // 
@@ -153,7 +152,7 @@
             // 
             uiComboBox1.DataSource = null;
             uiComboBox1.FillColor = Color.White;
-            uiComboBox1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiComboBox1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiComboBox1.ItemHoverColor = Color.FromArgb(155, 200, 255);
             uiComboBox1.ItemSelectForeColor = Color.FromArgb(235, 243, 255);
             uiComboBox1.Location = new Point(353, 5);
@@ -164,28 +163,27 @@
             uiComboBox1.Size = new Size(145, 29);
             uiComboBox1.SymbolSize = 24;
             uiComboBox1.TabIndex = 1;
-            uiComboBox1.Text = "请选择通道";
             uiComboBox1.TextAlignment = ContentAlignment.MiddleLeft;
             uiComboBox1.Watermark = "";
             uiComboBox1.SelectedIndexChanged += uiComboBox1_SelectedIndexChanged;
             // 
             // uiButton1
             // 
-            uiButton1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiButton1.Location = new Point(510, 5);
             uiButton1.MinimumSize = new Size(1, 1);
             uiButton1.Name = "uiButton1";
             uiButton1.Size = new Size(109, 28);
             uiButton1.TabIndex = 0;
             uiButton1.Text = "连接";
-            uiButton1.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton1.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             uiButton1.Click += uiButton1_Click;
             // 
             // uiPanel2
             // 
             uiPanel2.Controls.Add(uiTableLayoutPanel1);
             uiPanel2.Dock = DockStyle.Top;
-            uiPanel2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiPanel2.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiPanel2.Location = new Point(0, 39);
             uiPanel2.Margin = new Padding(4, 5, 4, 5);
             uiPanel2.MinimumSize = new Size(1, 1);
@@ -218,7 +216,7 @@
             // 
             uiTitlePanel1.Controls.Add(dataGridView1);
             uiTitlePanel1.Dock = DockStyle.Fill;
-            uiTitlePanel1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTitlePanel1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTitlePanel1.Location = new Point(0, 283);
             uiTitlePanel1.Margin = new Padding(4, 5, 4, 5);
             uiTitlePanel1.MinimumSize = new Size(1, 1);

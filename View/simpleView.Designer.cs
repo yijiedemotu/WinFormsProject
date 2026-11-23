@@ -42,7 +42,7 @@
             // uiTextBox1
             // 
             uiTextBox1.BackColor = Color.Transparent;
-            uiTextBox1.Font = new Font("宋体", 10F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox1.Font = new Font("宋体", 10F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox1.Location = new Point(7, 5);
             uiTextBox1.Margin = new Padding(4, 5, 4, 5);
             uiTextBox1.MinimumSize = new Size(1, 16);
@@ -59,7 +59,7 @@
             // uiTextBox2
             // 
             uiTextBox2.BackColor = Color.Transparent;
-            uiTextBox2.Font = new Font("宋体", 10F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox2.Font = new Font("宋体", 10F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox2.Location = new Point(7, 34);
             uiTextBox2.Margin = new Padding(4, 5, 4, 5);
             uiTextBox2.MinimumSize = new Size(1, 16);
@@ -76,7 +76,7 @@
             // uiTextBox3
             // 
             uiTextBox3.BackColor = Color.Transparent;
-            uiTextBox3.Font = new Font("宋体", 10F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox3.Font = new Font("宋体", 10F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox3.ForeColor = Color.Red;
             uiTextBox3.Location = new Point(5, 74);
             uiTextBox3.Margin = new Padding(4, 5, 4, 5);
@@ -94,7 +94,7 @@
             // uiTextBox4
             // 
             uiTextBox4.BackColor = Color.Transparent;
-            uiTextBox4.Font = new Font("宋体", 10F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox4.Font = new Font("宋体", 10F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox4.Location = new Point(64, 14);
             uiTextBox4.Margin = new Padding(4, 5, 4, 5);
             uiTextBox4.MinimumSize = new Size(1, 16);
@@ -111,7 +111,7 @@
             // uiTextBox5
             // 
             uiTextBox5.BackColor = Color.Transparent;
-            uiTextBox5.Font = new Font("宋体", 10F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox5.Font = new Font("宋体", 10F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox5.Location = new Point(111, 14);
             uiTextBox5.Margin = new Padding(4, 5, 4, 5);
             uiTextBox5.MinimumSize = new Size(1, 16);
@@ -128,7 +128,7 @@
             // uiTextBox6
             // 
             uiTextBox6.BackColor = Color.Transparent;
-            uiTextBox6.Font = new Font("宋体", 10F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox6.Font = new Font("宋体", 10F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox6.Location = new Point(172, 14);
             uiTextBox6.Margin = new Padding(4, 5, 4, 5);
             uiTextBox6.MinimumSize = new Size(1, 16);
@@ -160,7 +160,7 @@
             // 
             // uiTextBox7
             // 
-            uiTextBox7.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTextBox7.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
             uiTextBox7.Location = new Point(167, 41);
             uiTextBox7.Margin = new Padding(4, 5, 4, 5);
             uiTextBox7.MinimumSize = new Size(1, 16);

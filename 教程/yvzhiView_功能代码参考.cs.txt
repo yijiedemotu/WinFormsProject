@@ -1,0 +1,325 @@
+// ============================================================================
+// yvzhiView（阈值设置页）功能代码参考
+// 用法：把本文件全部内容复制去替换 View/yvzhiView.cs，Designer.cs 一个字都不用改。
+// 说明：Designer 里只绑定了 Load += yvzhiView_Load，所有按钮/面板事件都在这里绑定。
+// 依赖：.NET 8 自带 System.Text.Json，不需要新增 NuGet 包。
+// 配置落盘：程序运行目录下的 yuzhi.json（8 个通道各一份）。
+//
+// 【落地前先看这里】当前工程 21:02 版的 mainView.cs 已经引用了 mainCommon.data，
+// 但 Common/mainCommon.cs 里还没定义，直接 build 会报 9 个 CS0117。
+// 先在 Common/mainCommon.cs 的 mainCommon 类里加一行即可（也顺手修好共享数据）：
+//     public static ushort[] data = new ushort[8];
+// 然后 mainView.cs 第 52 行的 Array.Copy(tempData, mainCommon.data, 8) 就能编译通过了。
+// ============================================================================
+
+using System.Globalization;
+using System.IO;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Sunny.UI;
+using WinFormsApp3.Common;
+
+namespace WinFormsApp3.View
+{
+    public partial class yvzhiView : UIPage
+    {
+        // ---------- 1. 单个通道的配置模型 ----------
+        // 用 string 存界面输入（允许"未标定"为空），计算时统一用 TryNum 转 double。
+        // 必须是 public + 公共无参构造，System.Text.Json 才能反序列化。
+        public class ChannelSetting
+        {
+            public ChannelSetting() { }
+            public string StandardHigh { get; set; } = "";   // uiTextBox2 量具标准件上限/mm
+            public string StandardLow  { get; set; } = "";   // uiTextBox3 量具标准件下限/mm
+            public string CalibHigh    { get; set; } = "";   // uiTextBox4 校准量具上限标定/mm
+            public string CalibLow     { get; set; } = "";   // uiTextBox5 校准量具下限标定/mm
+            public string LimitHigh    { get; set; } = "0";  // uiTextBox6 测量上限/mm
+            public string LimitLow     { get; set; } = "0";  // uiTextBox7 测量下限/mm
+            public double Compensation { get; set; } = 0;    // 刀补当前值
+            public double CompMin      { get; set; } = -10;  // uiTextBox16 补偿最大下限值
+            public double CompMax      { get; set; } = 10;   // uiTextBox17 补偿最大上限值
+        }
+
+        private readonly ChannelSetting[] settings = new ChannelSetting[8];
+        private UIPanel[] channelPanels = Array.Empty<UIPanel>();
+        private volatile int currentChannel = 0;                 // 0~7
+        private readonly string configPath =
+            Path.Combine(AppContext.BaseDirectory, "yuzhi.json");
+        private readonly CancellationTokenSource cts = new();
+        private ushort currentRaw;                               // 当前通道原始计数
+        private double currentMm;                                // 换算后的尺寸
+        private bool hasMm;                                      // 是否完成标定
+
+        // ---------- 2. 构造函数：初始化 + 绑定所有事件 ----------
+        public yvzhiView()
+        {
+            InitializeComponent();
+
+            for (int i = 0; i < 8; i++) settings[i] = new ChannelSetting();
+            channelPanels = new[] { uiPanel5, uiPanel6, uiPanel7, uiPanel8,
+                                    uiPanel9, uiPanel10, uiPanel11, uiPanel12 };
+
+            // 8 个通道面板当按钮用；int ch = i 是闭包副本，直接写 i 会全部变成 8
+            for (int i = 0; i < 8; i++)
+            {
+                int ch = i;
+                channelPanels[i].Click += (s, e) => SelectChannel(ch);
+            }
+
+            // 设计器把 uiButton2~5 设成了 Enabled=false，这里启用，否则点了没反应
+            uiButton2.Enabled = uiButton3.Enabled = uiButton4.Enabled = uiButton5.Enabled = true;
+
+            uiButton1.Click += UiButton1_Click;                  // 「确认」：保存标定与阈值
+            uiButton2.Click += (s, e) => ApplyCompensation(uiTextBox8);
+            uiButton3.Click += (s, e) => ApplyCompensation(uiTextBox9);
+            uiButton4.Click += (s, e) => ApplyCompensation(uiTextBox12);
+            uiButton5.Click += (s, e) => ApplyCompensation(uiTextBox14);
+            uiButton6.Click += UiButton6_Click;                  // 「确认刀补」
+
+            Disposed += (s, e) => cts.Cancel();                  // 页面销毁时停掉后台刷新
+
+            LoadConfig();
+            SelectChannel(0);
+        }
+
+        // ---------- 3. 配置读写 ----------
+        private void LoadConfig()
+        {
+            try
+            {
+                if (File.Exists(configPath))
+                {
+                    var arr = JsonSerializer.Deserialize<ChannelSetting[]>(
+                        File.ReadAllText(configPath));
+                    if (arr != null && arr.Length == 8)
+                        for (int i = 0; i < 8; i++)
+                            if (arr[i] != null) settings[i] = arr[i];
+                }
+            }
+            catch (Exception ex) { gkHelper.Log.Error("读取阈值配置失败", ex); }
+        }
+
+        private void SaveConfig()
+        {
+            string json = JsonSerializer.Serialize(settings,
+                new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(configPath, json);
+        }
+
+        // ---------- 4. 通道切换：回填界面 + 高亮当前通道 ----------
+        private void SelectChannel(int index)
+        {
+            currentChannel = Math.Clamp(index, 0, 7);
+            var m = settings[currentChannel];
+
+            uiTextBox2.Text = m.StandardHigh;
+            uiTextBox3.Text = m.StandardLow;
+            uiTextBox4.Text = m.CalibHigh;
+            uiTextBox5.Text = m.CalibLow;
+            uiTextBox6.Text = m.LimitHigh;
+            uiTextBox7.Text = m.LimitLow;
+            uiTextBox13.Text = m.Compensation.ToString("F3", CultureInfo.InvariantCulture);
+            uiTextBox16.Text = m.CompMin.ToString(CultureInfo.InvariantCulture);
+            uiTextBox17.Text = m.CompMax.ToString(CultureInfo.InvariantCulture);
+
+            for (int i = 0; i < 8; i++)
+                channelPanels[i].Text = (i == currentChannel ? "● " : "") + $"通道{i + 1}";
+        }
+
+        // ---------- 5.「确认」：校验输入 → 保存当前通道参数 → 写 JSON ----------
+        private void UiButton1_Click(object? sender, EventArgs e)
+        {
+            var boxes = new[] { uiTextBox2, uiTextBox3, uiTextBox4,
+                                uiTextBox5, uiTextBox6, uiTextBox7 };
+            foreach (var box in boxes)
+            {
+                string t = box.Text.Trim();
+                if (t.Length == 0) continue;                     // 空 = 该项未标定
+                if (!TryNum(t, out _))
+                {
+                    MessageBox.Show($"「{t}」不是合法数字", "输入错误");
+                    box.Focus();
+                    return;
+                }
+            }
+
+            var m = settings[currentChannel];
+            m.StandardHigh = uiTextBox2.Text.Trim();
+            m.StandardLow  = uiTextBox3.Text.Trim();
+            m.CalibHigh    = uiTextBox4.Text.Trim();
+            m.CalibLow     = uiTextBox5.Text.Trim();
+            m.LimitHigh    = uiTextBox6.Text.Trim();
+            m.LimitLow     = uiTextBox7.Text.Trim();
+
+            if (TryNum(m.CalibHigh, out double cHi) && TryNum(m.CalibLow, out double cLo)
+                && cHi == cLo)
+            {
+                MessageBox.Show("标定量程非法：上下限不能相等", "输入错误");
+                return;
+            }
+
+            try
+            {
+                SaveConfig();
+                MessageBox.Show($"通道{currentChannel + 1} 参数已保存到 yuzhi.json", "完成");
+            }
+            catch (Exception ex)
+            {
+                gkHelper.Log.Error("保存阈值配置失败", ex);
+                MessageBox.Show("保存失败：" + ex.Message, "错误");
+            }
+        }
+
+        // ---------- 6. 两点线性标定 + 合格判定 ----------
+        // 约定：StandardHigh/Low = 标准件真实尺寸(mm)，
+        //       CalibHigh/Low    = 用这两个标准件标定时传感器读到的原始计数。
+        // 公式：mm = 标准下限 + (raw - 标定下限) × (标准上限 - 标准下限) / (标定上限 - 标定下限)
+        // 现场若定义相反（标定框填尺寸、标准件框填计数），把两组变量对调即可。
+        private bool TryConvert(ushort raw, out double mm)
+        {
+            mm = 0;
+            var m = settings[currentChannel];
+            if (!TryNum(m.StandardHigh, out double sHi) ||
+                !TryNum(m.StandardLow,  out double sLo) ||
+                !TryNum(m.CalibHigh,    out double cHi) ||
+                !TryNum(m.CalibLow,     out double cLo)) return false;
+
+            double rawSpan = cHi - cLo;
+            if (rawSpan == 0 || sHi == sLo) return false;
+
+            mm = sLo + (raw - cLo) * (sHi - sLo) / rawSpan;
+            return !double.IsNaN(mm) && !double.IsInfinity(mm);
+        }
+
+        private static bool TryNum(string? text, out double value) =>
+            double.TryParse((text ?? "").Trim(), NumberStyles.Float,
+                            CultureInfo.InvariantCulture, out value)
+            && !double.IsNaN(value) && !double.IsInfinity(value);
+
+        // ---------- 7. 实时值刷新（Designer 已绑定 Load += yvzhiView_Load） ----------
+        // 每秒把当前通道原始值写进 uiTextBox1，换算尺寸与合格状态显示在 uiLabel1 上。
+        // 当前写法：本页自己读一次串口，开箱即用，但和 mainView 形成"两处读同一串口"。
+        // 推荐写法（配合上面 mainCommon.data 那行改动）：把 if (connected) 块里的
+        //   var data = ...ReadHoldingRegisters(0, 8);
+        //   if (data.Length > currentChannel) currentRaw = data[currentChannel];
+        // 两行换成一行：
+        //   currentRaw = mainCommon.data[currentChannel];
+        // 这样全程序只有 mainView 一处采集，阈值页只读内存数组，更快也不会抢串口。
+        private void yvzhiView_Load(object sender, EventArgs e)
+        {
+            Task.Run(async () =>
+            {
+                while (!cts.IsCancellationRequested)
+                {
+                    try
+                    {
+                        bool connected = mainCommon.modbusRtuClient.IsConnected;
+                        string rawText = "--";
+                        string tip = "传感器当前值：未连接";
+
+                        if (connected)
+                        {
+                            var data = mainCommon.modbusRtuClient.ReadHoldingRegisters(0, 8);
+                            if (data.Length > currentChannel) currentRaw = data[currentChannel];
+                            hasMm = TryConvert(currentRaw, out currentMm);
+
+                            rawText = currentRaw.ToString(CultureInfo.InvariantCulture);
+                            tip = hasMm
+                                ? $"传感器当前值：{currentMm:F3} mm"
+                                : "传感器当前值：未标定";
+
+                            var m = settings[currentChannel];
+                            if (hasMm && TryNum(m.LimitLow, out double lo) &&
+                                TryNum(m.LimitHigh, out double hi))
+                                tip += (currentMm >= lo && currentMm <= hi) ? "（合格）" : "（超差）";
+                        }
+                        else hasMm = false;
+
+                        PostToUi(() => { uiTextBox1.Text = rawText; uiLabel1.Text = tip; });
+                    }
+                    catch (Exception ex)
+                    {
+                        gkHelper.Log.Error("阈值页实时值刷新异常", ex);
+                    }
+
+                    try { await Task.Delay(1000, cts.Token); }
+                    catch (OperationCanceledException) { break; }
+                }
+            }, cts.Token);
+        }
+
+        // 后台线程 → UI 线程。BeginInvoke 前必须判断句柄/销毁状态。
+        private void PostToUi(Action action)
+        {
+            if (IsDisposed || !IsHandleCreated) return;
+            try { BeginInvoke(action); } catch { }
+        }
+
+        // ---------- 8. 刀补 ----------
+        // 补偿量 = 设定目标尺寸 - 当前实测尺寸；叠加到「刀补当前值」并受上下限约束。
+        // 右半区 4 层面板是重叠的，只有最内层 uiPanel15 的控件可见，
+        // 所以 4 个「补偿值」按钮的结果统一写回可见的 uiTextBox13。
+        private void ApplyCompensation(UITextBox targetBox)
+        {
+            if (!TryNum(targetBox.Text, out double target))
+            {
+                MessageBox.Show("请先在「设定值」里填目标尺寸", "输入错误");
+                return;
+            }
+            if (!hasMm)
+            {
+                MessageBox.Show("请先完成两点标定并连接传感器，拿到实测尺寸", "无法补偿");
+                return;
+            }
+
+            var m = settings[currentChannel];
+            double delta   = target - currentMm;
+            double oldComp = TryNum(uiTextBox13.Text, out double c) ? c : m.Compensation;
+            double min     = TryNum(uiTextBox16.Text, out double a) ? a : m.CompMin;
+            double max     = TryNum(uiTextBox17.Text, out double b) ? b : m.CompMax;
+            double newComp = oldComp + delta;
+
+            if (newComp < min || newComp > max)
+            {
+                MessageBox.Show($"补偿值 {newComp:F3} 超出允许范围 [{min}, {max}]", "刀补超限");
+                return;
+            }
+
+            uiTextBox13.Text = newComp.ToString("F3", CultureInfo.InvariantCulture);
+            MessageBox.Show($"本次补偿量 {delta:F3}，刀补当前值 → {newComp:F3}", "补偿值");
+        }
+
+        // 「确认刀补」：把可见的刀补值 + 上下限存进当前通道并写盘
+        private void UiButton6_Click(object? sender, EventArgs e)
+        {
+            if (!TryNum(uiTextBox13.Text, out double comp))
+            {
+                MessageBox.Show("刀补当前值不是合法数字", "输入错误");
+                return;
+            }
+
+            var m = settings[currentChannel];
+            if (TryNum(uiTextBox16.Text, out double min)) m.CompMin = min;
+            if (TryNum(uiTextBox17.Text, out double max)) m.CompMax = max;
+            if (comp < m.CompMin || comp > m.CompMax)
+            {
+                MessageBox.Show("刀补值超出上下限，请检查", "输入错误");
+                return;
+            }
+
+            m.Compensation = comp;
+            try
+            {
+                SaveConfig();
+                MessageBox.Show($"通道{currentChannel + 1} 刀补值 {comp:F3} 已保存", "完成");
+            }
+            catch (Exception ex)
+            {
+                gkHelper.Log.Error("保存刀补失败", ex);
+                MessageBox.Show("保存失败：" + ex.Message, "错误");
+            }
+        }
+    }
+}
