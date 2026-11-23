@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>八通道测量上位机 · 项目简历与面试宝典</title>
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#f5f6f8;color:#1f2937;
+ font-family:"Microsoft YaHei UI","PingFang SC","Segoe UI",system-ui,sans-serif;
+ font-size:15px;line-height:1.78;-webkit-font-smoothing:antialiased}
+a{color:#1d4ed8;text-decoration:none}
+.topbar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #e5e7eb;
+ box-shadow:0 1px 3px rgba(16,24,40,.04)}
+.topbar-inner{max-width:1180px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.brand{font-size:17px;font-weight:700;color:#111827;white-space:nowrap}
+.brand span{color:#4f46e5}
+.tabs{display:flex;gap:6px;background:#f3f4f6;padding:4px;border-radius:10px}
+.tab{border:0;background:transparent;padding:7px 16px;border-radius:8px;cursor:pointer;
+ font-size:14px;font-weight:600;color:#6b7280;font-family:inherit}
+.tab.active{background:#fff;color:#312e81;box-shadow:0 1px 3px rgba(16,24,40,.12)}
+.tools{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tool{border:1px solid #e5e7eb;background:#fff;color:#374151;padding:7px 12px;border-radius:8px;
+ cursor:pointer;font-size:13px;font-family:inherit}
+.tool:hover{border-color:#a5b4fc;color:#4338ca}
+.tool.on{background:#eef2ff;border-color:#a5b4fc;color:#4338ca}
+.search{border:1px solid #e5e7eb;border-radius:8px;padding:7px 10px;font-size:13px;width:170px;
+ font-family:inherit;outline:none}
+.search:focus{border-color:#818cf8}
+.layout{max-width:1180px;margin:0 auto;padding:26px 24px 80px;display:grid;grid-template-columns:212px 1fr;gap:28px}
+.sidebar{position:sticky;top:76px;align-self:start;max-height:calc(100vh - 100px);overflow:auto;
+ background:#fff;border:1px solid #e9eaee;border-radius:12px;padding:14px 10px}
+.sidebar h4{margin:4px 8px 10px;font-size:12px;letter-spacing:.08em;color:#9ca3af;text-transform:uppercase}
+.toc-link{display:block;padding:6px 10px;border-radius:7px;color:#4b5563;font-size:13px;line-height:1.45}
+.toc:not(.active){display:none}
+.toc-link:hover{background:#f3f4f6;color:#4338ca}
+.card{background:#fff;border:1px solid #e9eaee;border-radius:14px;padding:38px 44px;
+ box-shadow:0 2px 10px rgba(16,24,40,.035)}
+.pane{display:none}.pane.active{display:block}
+h1{font-size:26px;line-height:1.4;margin:0 0 14px;color:#111827;letter-spacing:-.01em}
+h2{font-size:20px;margin:38px 0 16px;padding-bottom:9px;border-bottom:2px solid #eef2ff;color:#312e81}
+h3{font-size:16px;margin:26px 0 10px;color:#111827;line-height:1.5}
+h4{font-size:15px;margin:22px 0 10px;color:#374151}
+p{margin:9px 0}
+hr{border:0;border-top:1px solid #e9eaee;margin:30px 0}
+strong{color:#111827;font-weight:700}
+code{background:#f3f4f6;color:#b91c1c;padding:1px 5px;border-radius:4px;font-size:13px;
+ font-family:"Cascadia Code",Consolas,"Courier New",monospace}
+pre{background:#f8f9fb;border:1px solid #e9eaee;border-radius:10px;padding:16px 18px;
+ overflow:auto;margin:14px 0;line-height:1.6}
+pre code{background:none;color:#1f2937;padding:0;font-size:12.5px}
+blockquote{margin:14px 0;padding:14px 18px;background:#f8f9fc;border-left:4px solid #818cf8;
+ border-radius:0 8px 8px 0;color:#374151}
+ul,ol{margin:10px 0;padding-left:24px}
+li{margin:6px 0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;display:block;overflow-x:auto}
+th,td{border:1px solid #e5e7eb;padding:9px 12px;text-align:left;vertical-align:top;line-height:1.6}
+th{background:#f8f9fc;color:#312e81;font-weight:700;white-space:nowrap}
+tbody tr:nth-child(even){background:#fcfcfd}
+.q{border:1px solid #eceef2;border-radius:11px;padding:4px 20px 16px;margin:18px 0;background:#fff}
+.q h3{margin:18px 0 12px;padding-left:12px;border-left:3px solid #6366f1}
+.q p,.q ul,.q ol,.q table,.q pre,.q blockquote{margin-left:2px}
+.q.hidden{display:none}
+body.quizmode .q > :not(h3){display:none}
+body.quizmode .q{padding-bottom:6px;border-color:#e5e7eb}
+.badge{display:inline-block;background:#eef2ff;color:#4338ca;border-radius:6px;padding:1px 8px;
+ font-size:12px;font-weight:600;margin-left:8px;vertical-align:middle}
+.footer{text-align:center;color:#9ca3af;font-size:12px;padding:22px 0 0}
+@media (max-width:900px){
+ .layout{grid-template-columns:1fr;padding:18px 14px 60px}
+ .sidebar{display:none}
+ .card{padding:24px 18px}
+ .topbar-inner{padding:10px 14px;gap:10px}
+ .tools{width:100%;margin-left:0}
+}
+@media print{
+ body{background:#fff;font-size:11.5pt;line-height:1.55}
+ .topbar,.sidebar,.tools,.no-print{display:none !important}
+ .layout{display:block;max-width:none;padding:0}
+ .pane{display:block !important;page-break-before:always}
+ .pane:first-child{page-break-before:auto}
+ .card{border:0;box-shadow:none;padding:0}
+ body.quizmode .q > :not(h3){display:block}
+ .q,.q h3,table,pre,blockquote{page-break-inside:avoid}
+ h2{page-break-after:avoid}
+ a{color:inherit}
+}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="topbar-inner">
+  <div class="brand">TICP <span>·</span> 简历与面试宝典</div>
+  <div class="tabs">
+    <button class="tab active" data-k="r">项目简历</button>
+    <button class="tab" data-k="q">面试题与答案 <span class="badge">72 题</span></button>
+  </div>
+  <div class="tools">
+    <input class="search" id="search" placeholder="搜索题目关键词…">
+    <button class="tool" id="quizBtn">只看题目</button>
+    <button class="tool" id="printBtn">打印 / 存 PDF</button>
+  </div>
+</div></div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="toc active" data-k="r"><h4>简历目录</h4><a class="toc-link" data-key="r" href="#r-h2-3">一、简历正文（可直接复制到简历模板）</a><a class="toc-link" data-key="r" href="#r-h2-24">二、30 秒口述版（自我介绍 / &quot;讲讲你的项目&quot;）</a><a class="toc-link" data-key="r" href="#r-h2-28">三、面试口径与红线</a><a class="toc-link" data-key="r" href="#r-h2-36">四、投递前可补的 3 件加分项（按性价比排序）</a><a class="toc-link" data-key="r" href="#r-h2-39">五、这个项目匹配的岗位关键词</a></div>
+    <div class="toc" data-k="q"><h4>题库分组</h4><a class="toc-link" data-key="q" href="#q-h2-3">A. 项目表述与真实性（先过这一关，答砸了后面没机会）</a><a class="toc-link" data-key="q" href="#q-h2-43">B. C# / .NET 基础</a><a class="toc-link" data-key="q" href="#q-h2-99">C. WinForms / UI 线程</a><a class="toc-link" data-key="q" href="#q-h2-151">D. Modbus / 串口 / 采集链路</a><a class="toc-link" data-key="q" href="#q-h2-207">E. 标定 / 判定 / 业务正确性</a><a class="toc-link" data-key="q" href="#q-h2-257">F. SQLite / 数据层</a><a class="toc-link" data-key="q" href="#q-h2-304">G. 可视化（ScottPlot 5）</a><a class="toc-link" data-key="q" href="#q-h2-322">H. 架构 / 设计 / 可维护性</a><a class="toc-link" data-key="q" href="#q-h2-356">I. 现场排错情景题（面试官最爱问&quot;如果…你查哪里&quot;）</a><a class="toc-link" data-key="q" href="#q-h2-386">J. 行为面 / HR</a><a class="toc-link" data-key="q" href="#q-h2-406">面试前 10 分钟速查表</a></div>
+  </aside>
+  <main class="card">
+    <div class="pane active" id="pane-r"><h1 id="r-h1-0">八通道尺寸测量上位机系统（TICP）｜项目简历</h1>
+<blockquote><strong>使用说明（投递前删除本段）</strong><br>1. 这是一份「个人独立项目」的简历，请<strong>如实标注为个人实践/学习型项目</strong>。工控岗位面试官大多能一眼看出是否量产过，把练习项目包装成"上线交付"是最容易被追问穿帮的做法。<br>2. 全文只用源码里能验证的事实，没有编造"效率提升 XX%""服务 XX 家客户""日均 XX 万条数据"这类数字。带 <code>【】</code> 的部分请按你的真实情况替换。<br>3. 若要压成一页 A4：保留「专业技能 + 项目经历前 5 条 + 技术难点 3 条 + 结果验证」，删掉其余段落。<br>4. 配套文件：<code>面试题与答案_八通道测量上位机.md</code>（72 题）、<code>项目简历与面试宝典.html</code>（可浏览 / 可打印成 PDF）。</blockquote>
+<hr>
+<h2 id="r-h2-3">一、简历正文（可直接复制到简历模板）</h2>
+<h3 id="r-h3-4">【姓名】 ｜ 上位机软件工程师（C# / .NET · 工业测控方向）</h3>
+<ul><li>电话：【】 ｜ 邮箱：【】 ｜ GitHub：【github.com/yijiedemotu/WinFormsProject】</li><li>学历：【】 ｜ 专业：【】 ｜ 工作年限：【应届 / X 年】 ｜ 到岗时间：【】</li></ul>
+<h4 id="r-h4-6">求职意向</h4>
+<p>上位机软件工程师 / 工业测控软件开发 / C# .NET 客户端开发（设备通信、数据采集、质量判定、数据追溯）</p>
+<h4 id="r-h4-8">专业技能</h4>
+<table><thead><tr><th>类别</th><th>掌握内容</th></tr></thead><tbody><tr><td>语言与框架</td><td>C# / .NET 8、<code>async/await</code>、<code>Task</code> + <code>CancellationTokenSource</code>、<code>Volatile</code>、<code>lock</code>、泛型与集合、LINQ、<code>System.Text.Json</code></td></tr><tr><td>界面开发</td><td>WinForms（.NET 8 Windows）、SunnyUI 3.9.9、<code>UIPage</code>/<code>UIPanel</code> 页面嵌入、自定义控件复用、<code>DataGridView</code> + <code>BindingList&lt;T&gt;</code>、Dock/TableLayoutPanel 布局、Designer 事件绑定机制</td></tr><tr><td>设备通信</td><td>Modbus RTU（0x03 读保持寄存器）、NModbus 3.0.83 / <code>System.IO.Ports.SerialPort</code>、串口参数配置、字节序转换（ABCD/CDAB/BADC/DCBA）、超时与断线自动重连</td></tr><tr><td>数据存储</td><td>SQLite（Microsoft.Data.Sqlite 8.0.33）、参数化 SQL、建表与幂等升级迁移、索引、<code>COUNT/SUM(CASE WHEN)</code> 聚合统计、CSV 导出（UTF-8 BOM + 引号转义）</td></tr><tr><td>可视化</td><td>ScottPlot 5.1.59 / SkiaSharp 趋势曲线、时间轴（OADate + DateTimeTicksBottom）、中文字体检测与设置、离屏渲染验证</td></tr><tr><td>工程化</td><td>分层设计（Model/Common/Helper/View）、全局异常处理、分级日志与限流、配置文件持久化、Git 版本管理、脱离 UI 的纯逻辑验证</td></tr></tbody></table>
+<hr>
+<h4 id="r-h4-11">项目经历</h4>
+<p><strong>八通道尺寸测量上位机系统（TICP）</strong> ｜ 个人独立开发 · 工程实践项目 ｜ 【20XX.XX – 20XX.XX，按实际填写】</p>
+<blockquote><strong>项目性质说明</strong>：非商业交付项目，用于完整走通「设备采集 → 标定 → 判定 → 入库 → 追溯」的上位机业务闭环；代码与开发笔记开源在个人 GitHub，可现场演示。</blockquote>
+<p><strong>技术栈</strong>：C# / .NET 8 WinForms · SunnyUI · NModbus + SerialPort（Modbus RTU）· Microsoft.Data.Sqlite · ScottPlot 5 / SkiaSharp · System.Text.Json · Task/CTS/Volatile · Git</p>
+<p><strong>项目简介</strong>：面向 8 通道尺寸测量场景，通过 RS-485/串口以 Modbus RTU 从从站 1 的保持寄存器 0 起始连续读取 8 路原始计数，经两点线性标定换算为物理量后按上下限阈值判定合格状态，实时显示 8 张通道卡片与指示灯，并支持数据入库、按时间/产品/通道查询、合格率统计、CSV 导出和历史趋势曲线。</p>
+<p><strong>主要工作（独立完成需求梳理、架构分层、编码、联调验证）</strong></p>
+<ol><li><strong>设备通信与采集链路</strong>：基于 <code>NModbus</code> 封装 <code>ModbusRtuClient</code>，实现串口连接/断开、0x01~0x10 常用功能码读取写入及 <code>Short/UShort/Int32/Float/Double</code> 多类型转换与 4 种字节序重排；采用 <code>Task.Run</code> + <code>CancellationTokenSource</code> 后台异步循环按配置周期（默认 1000ms）轮询，替代 <code>WinForms.Timer</code> 避免 UI 线程阻塞；实现带限流（默认 3000ms）的断线自动重连状态机，用 <code>volatile manualDisconnect</code> 区分「人工断开」与「异常掉线」，避免用户主动断开后被反复重连。</li><li><strong>标定算法与质量判定</strong>：在 Model 层实现两点线性标定 <code>value = valueLow + (raw - rawLow) * (valueHigh-valueLow) / (rawHigh-rawLow)</code>，对跨度为零、NaN/Infinity 做防护；抽出不依赖 WinForms 的纯逻辑服务 <code>QualityCommon.Evaluate(raw, config)</code>，用 <code>bool?</code> 三态区分「合格 / 超差 / 未标定」，按「超差 &gt; 未标定 &gt; 合格」聚合整体结论并记录超差通道号，避免把未标定通道误报为不合格。</li><li><strong>数据正确性与持久化</strong>：明确 <code>oriData</code>（原始寄存器计数）与 <code>data</code>（标定后物理量）两套数据语义，采集线程用 <code>Volatile.Write</code> 同步写入；保存数据时从 <code>oriData</code> <strong>取快照并重新判定</strong>后再入库，不信任可能因隐藏通道/切页而过期的最新界面显示值，保证「库里的数据与判定同源」；设计 13 字段 <code>DataModel</code> 表并建 <code>testTime</code> 索引，实现参数化 CRUD、动态条件查询、SQL 内聚合合格率、CSV 导出。</li><li><strong>幂等数据库升级</strong>：针对旧版本数据库缺少 <code>result</code>/<code>ngChannels</code> 列的问题，用 <code>PRAGMA table_info(DataModel)</code> 探测已有列 → <code>ALTER TABLE ADD COLUMN</code> → <code>UPDATE</code> 回填历史数据 → <code>CREATE INDEX IF NOT EXISTS</code>，保证程序在任意历史版本库上启动都能自动升级且不重复执行（已用含 14 行历史数据的旧库验证）。</li><li><strong>界面与可视化</strong>：用 <code>FormShowHelper.formShow</code> 以「换 Parent + Dock=Fill」方式实现 4 个功能页（数据测量 / 查询统计 / 趋势曲线 / 阈值设置）的单容器切换与懒加载缓存；以 4×2 布局复用 8 个 <code>simpleView</code> 通道卡片，DataGridView 绑定 <code>BindingList&lt;dataModel&gt;</code>；用 ScottPlot 5 绘制历史趋势，通过 <code>Fonts.Detect</code> + <code>plot.Font.Set</code> + <code>Legend.FontName</code> 解决 SkiaSharp 不走系统字体回退导致的中文方框问题，并用离屏 <code>Render(canvas, w, h)</code> 出 PNG 验证，无需启动窗体。</li><li><strong>并发安全与稳定性</strong>：跨线程更新统一封装 <code>PostToUi</code> / <code>UpdateConnectionUi</code>，校验 <code>IsDisposed</code>、<code>IsHandleCreated</code>，用 <code>BeginInvoke</code>（而非 <code>Invoke</code>）投递并捕获句柄销毁瞬间的 <code>InvalidOperationException</code>；后台线程只读写 <code>volatile</code> 标志，不直接访问控件；将采集任务与刷新定时器的停止时机绑定 <code>Disposed</code> 而非 <code>HandleDestroyed</code>，规避页面换 Parent 时句柄重建导致"切回来就不采集"的问题；<code>Load</code> 事件加幂等保护，防止重复创建卡片与重复启动任务。</li><li><strong>工程化与验证</strong>：12 项串口/采集参数落 <code>appconfig.json</code>（枚举存字符串 + <code>Clamp()</code> 越界钳制 + 只在连接成功时持久化端口）、8 通道标定/阈值落 <code>yuzhi.json</code>（启动时补齐/截断并逐项 <code>Normalize()</code>）；日志按日期/级别分目录并对采集错误与超差报警做 10s 限流；<code>Program.cs</code> 挂载 <code>Application.ThreadException</code> + <code>AppDomain.UnhandledException</code> 全局兜底，同时对高频 GDI+ 字体异常只记日志不弹窗；把纯判定逻辑接入临时控制台工程实跑验证，无需串口和窗体。</li></ol>
+<p><strong>技术难点与解决</strong></p>
+<table><thead><tr><th>问题</th><th>根因</th><th>解决方案</th><th>结果</th></tr></thead><tbody><tr><td>8 个未标定通道全被判为"不合格"</td><td>二值 <code>bool</code> 无法表达"没有判定依据"</td><td>判定结果改 <code>bool?</code>，未标定为 <code>null</code>；整体结论按 超差 &gt; 未标定 &gt; 合格 聚合</td><td>消除误报，界面灯色区分 绿/红/灰 三态</td></tr><tr><td>切换页面后再回来采集任务停止</td><td>换 <code>Parent</code> 会重建窗口句柄并触发 <code>HandleDestroyed</code>，在那里 Cancel 了 CTS</td><td>任务/定时器只在 <code>Disposed</code> 停止；CTS 只 <code>Cancel</code> 不 <code>Dispose</code>；<code>Load</code> 加 <code>initialized</code> 幂等</td><td>页面可反复切换，采集与刷新持续运行</td></tr><tr><td>旧数据库一保存就报 <code>no such column: result</code></td><td><code>CREATE TABLE IF NOT EXISTS</code> 不会给已存在的表补列</td><td><code>PRAGMA table_info</code> 探测 + <code>ALTER TABLE</code> + 历史行回填 + 索引，全程幂等</td><td>老库无需手工删库即可升级，历史数据保留</td></tr><tr><td>曲线图中文显示为方框 □</td><td>ScottPlot 5 默认 <code>Segoe UI</code> 无 CJK 字形，SkiaSharp 不做 WinForms 字体回退</td><td><code>Fonts.Detect(中文样本)</code> 取字体后 <code>plot.Font.Set</code>，另设 <code>plot.Legend.FontName</code>（Font.Set 不覆盖图例）</td><td>标题/坐标轴/图例中文正常，离屏 PNG 验证通过</td></tr><tr><td>拔掉串口后日志暴涨、界面弹窗卡死</td><td>每轮轮询都抛异常并同步弹窗</td><td>采集失败即 <code>Disconnect()</code> + 抛异常触发重连；错误日志/超差日志各限流 10s；后台线程绝不弹 MessageBox</td><td>异常时静默重连，日志量可控</td></tr></tbody></table>
+<p><strong>结果与验证（均为可复现事实）</strong></p>
+<ul><li><code>dotnet build WinFormsApp3.slnx</code>：<strong>0 错误</strong>；6 条 <code>NU1701</code> 警告已定位为 OpenTK / SkiaSharp 等传递依赖的目标框架差异，非代码问题。</li><li>完整跑通 8 通道 × 1s 轮询、3s 重连、10s 日志限流、13 字段入库、5 个功能页面、2 个 JSON 配置文件的业务闭环。</li><li>用临时控制台工程（ProjectReference 引用主项目）脱离窗体与串口验证纯逻辑：标定换算 <code>500 → 50.00</code>、超差 <code>NG=[1,2]</code>、自增 Id 连续、<code>GetById</code>/条件查询/时间范围查询正常、统计 <code>总 2 / NG 1 / 合格率 50.0%</code>、迁移后旧行 <code>result='未标定'</code>、索引存在。</li><li>纯逻辑服务 <code>QualityCommon</code> 不引用 WinForms，可独立单测；源码含完整中文注释与 5 篇开发/排错笔记，Git 有分阶段提交记录，可逐步讲解演进过程。</li></ul>
+<p><strong>项目复盘 / 后续改进（面试主动说，体现工程判断）</strong>：① 共享数组逐元素读写存在读到"新旧混合"快照的窗口，拟改为不可变 <code>RecordSnapshot</code> + <code>Interlocked.Exchange</code>；② 全局静态 <code>ModbusRtuClient</code> 难 mock，拟抽 <code>IModbusClient</code> 接口 + 依赖注入，便于扩展 Modbus TCP 与单元测试；③ 数值与时间以 TEXT 存储、查询无分页/事务，拟改 REAL/INTEGER 并补 <code>LIMIT</code>、批量事务与异步 I/O；④ 报警目前只有日志，拟补去重、确认、声音与报警记录表。</p>
+<hr>
+<h2 id="r-h2-24">二、30 秒口述版（自我介绍 / "讲讲你的项目"）</h2>
+<blockquote>「这是一个我自己独立做的八通道尺寸测量上位机，用 .NET 8 WinForms 加 SunnyUI。下位机通过 Modbus RTU 从保持寄存器读 8 路原始计数，后台 Task 按 1 秒周期轮询，异常掉线会自动重连。数据读回来先做两点线性标定换算成物理量，再按每个通道的上下限判定——这里我用 <code>bool?</code> 三态把『未标定』和『不合格』分开，整体结论按超差优先于未标定聚合。判定结果实时显示在 8 张通道卡片上，点保存时会从原始数据快照重新判定一次再写进 SQLite，保证库里的数据和判定同源，不会因为在别的页面而拿到过期的界面值。后面还有条件查询、SQL 里算合格率、CSV 导出和 ScottPlot 趋势曲线。<br>做得比较较真的是几个正确性问题：旧库缺列时做了幂等迁移；跨线程一律 <code>BeginInvoke</code> 加句柄校验；采集任务只在 <code>Disposed</code> 停，因为切页换 Parent 会重建句柄。最后把不依赖 UI 的判定逻辑单独抽出来，用控制台工程跑通了验证。这是个学习实践项目，没有量产，但整条链路是我自己从零搭起来并且能现场演示的。」</blockquote>
+<p><strong>60~90 秒加长版</strong>：在上面基础上补「两点标定公式 + 除零保护」「<code>PRAGMA table_info</code> 迁移四步」「ScottPlot 中文方框根因」三段，这三段最容易引发技术追问，也最容易得分。</p>
+<hr>
+<h2 id="r-h2-28">三、面试口径与红线</h2>
+<h3 id="r-h3-29">必须如实说</h3>
+<table><thead><tr><th>被问到</th><th>建议答法</th></tr></thead><tbody><tr><td>这是商业项目吗？上线了吗？</td><td>「是我个人独立做的工程实践项目，没有量产交付，代码和笔记都在 GitHub 上。我做它的目的就是把上位机从通信到追溯的完整闭环自己走一遍，所以特意选了会踩坑的实现方式，比如旧库迁移、句柄重建、中文字体这些。」</td></tr><tr><td>真实设备是什么？</td><td>按实情说（模拟器 / 从站设备 / 仅逻辑验证）。<strong>不要编造 PLC 型号、产线、客户</strong>。可以说「通信层按标准 Modbus RTU 从站设计，纯业务逻辑用控制台工程脱离硬件验证」。</td></tr><tr><td>数据量多大？性能如何？</td><td>「目前是本地单机练习库，量级很小（十几条历史数据）；我知道这不足以证明高并发能力，所以设计的重点放在正确性和边界处理上，性能方面我能说清怎么改：分页、批量事务、异步 I/O、归档。」</td></tr><tr><td>一个人做的？</td><td>「是，从需求拆解到编码验证都是我。也正因如此，代码风格、提交记录和排错笔记能完整还原当时的决策过程。」</td></tr></tbody></table>
+<h3 id="r-h3-31">绝对不要写 / 不要说</h3>
+<ul><li>❌ "已量产上线""服务 XX 客户""日均采集 XX 万条""效率提升 XX%" —— 无依据，一追问就露馅。</li><li>❌ 把 WPF/MVVM、OPC UA、PLC 编程、MES 对接、用户权限、Excel（EPPlus/ClosedXML）、Modbus TCP 写成"已实现" —— <strong>工程里都不存在</strong>，实际只有 CSV 导出和 Modbus RTU。</li><li>❌ 把 <code>NU1701</code> 警告说成"零警告"，或把 <code>data1..data8</code> 说成"数值类型字段"（实际是 TEXT）。</li><li>❌ 把"查询统计"说成"实时大数据分析"。</li><li>❌ 说 <code>timer1</code> 还在用于采集（实际已弃用，是保留的死代码），也别把 <code>导出excel</code> 按钮说成 Excel 导出。</li></ul>
+<h3 id="r-h3-33">被深挖时的加分答法</h3>
+<ul><li>主动暴露局限 + 给出改造方案（见「后续改进」四条），比强行辩护更显工程成熟度。</li><li>能讲清「为什么」而不是只讲「用了什么」：为什么不用 Timer、为什么 BeginInvoke、为什么 <code>Disposed</code>、为什么快照重判定、为什么 <code>bool?</code>。</li><li>能报出具体文件路径与类名：<code>Common/qualityCommon.cs</code>、<code>Helper/ModbusRtuClient.cs</code>、<code>Helper/sqlHelper.cs</code>、<code>View/mainView.cs</code>。</li></ul>
+<hr>
+<h2 id="r-h2-36">四、投递前可补的 3 件加分项（按性价比排序）</h2>
+<ol><li><strong>补一个真正的单元测试项目</strong>（xUnit）：覆盖 <code>TryConvert</code>（正常 / 除零 / 反向量程 / 越界外推）、<code>Evaluate</code>（三态 + 优先级）、<code>GetStats</code>、<code>NormalizeTime</code>。简历里就能写「核心逻辑有单测覆盖」。</li><li><strong>录 30~60 秒演示 GIF 或截图放进 README</strong>：8 卡片灯色变化、断线重连、查询统计、趋势曲线中文。面试官看不到环境时，图比文字有效。</li><li><strong>抽 <code>IModbusClient</code> 接口 + 写一个 Mock 从站</strong>：既能证明你会设计可测试架构，又能现场脱离硬件演示，直接把"练习项目"的短板补掉一半。</li></ol>
+<hr>
+<h2 id="r-h2-39">五、这个项目匹配的岗位关键词</h2>
+<p><code>上位机软件工程师</code> · <code>C#/.NET 客户端</code> · <code>WinForms/WPF</code> · <code>工业测控</code> · <code>串口通信</code> · <code>Modbus RTU</code> · <code>数据采集与监控（SCADA 轻量场景）</code> · <code>SQLite 数据追溯</code> · <code>SPC/质量判定</code> · <code>设备联调</code></p>
+<blockquote>若目标岗位偏 <strong>WPF + MVVM / 大型 MES / 运动控制 / 视觉</strong>，这个项目只能作为"通信与业务闭环"的佐证，建议另补一个 WPF/MVVM 或 PLC 通信项目，不要硬套。</blockquote></div>
+    <div class="pane" id="pane-q"><h1 id="q-h1-0">八通道尺寸测量上位机（TICP）｜面试题与参考答案</h1>
+<blockquote><strong>配套</strong>：<code>项目简历_八通道测量上位机.md</code>。<br><strong>用法</strong>：第一遍只看题目自测，答不出的标记；第二遍看「参考答案 + 追问」；面试前 10 分钟只看最后一章「速查表」。<br><strong>难度标记</strong>：⭐ 基础必答 ｜ ⭐⭐ 需要讲清原理 ｜ ⭐⭐⭐ 区分度题 / 深挖题<br>所有答案都对应本项目真实代码，能报出文件路径与类名是重要加分项。</blockquote>
+<hr>
+<h2 id="q-h2-3">A. 项目表述与真实性（先过这一关，答砸了后面没机会）</h2>
+<section class="q" id="q-h3-4">
+<h3 id="q-h3-4">A1 ⭐ 用 30 秒介绍这个项目</h3>
+<p><strong>参考答案</strong>：按「场景 → 链路 → 我的重点工作 → 结果」四段讲，不要按模块罗列。<br>「八通道尺寸测量的上位机，.NET 8 WinForms。Modbus RTU 从保持寄存器读 8 路原始计数 → 两点标定换成物理量 → 按上下限三态判定 → 实时 8 张卡片显示 → SQLite 入库 → 查询统计/CSV/趋势曲线。我个人独立做的实践项目，重点解决了三个正确性问题：未标定不能被误判为不合格、入库必须用原始数据快照重新判定、旧数据库缺列要幂等迁移。另外把跨线程 UI、句柄重建、自动重连这些稳定性问题处理了。」</p>
+<p><strong>踩坑</strong>：开头别说"用了一个 SunnyUI 框架和 ScottPlot 画图"，那是技术栈不是项目。也别超过 60 秒。</p>
+<p><strong>追问</strong>：<code>讲讲最有技术含量的一段代码</code> → 选 <code>QualityCommon.Evaluate</code> 或「入库快照重判定」，讲「问题—方案—代价」，别选 UI 布局。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-11">
+<h3 id="q-h3-11">A2 ⭐⭐ 这是商业项目吗？上线了没有？</h3>
+<p><strong>参考答案</strong>：如实说「个人独立实践项目，非量产交付，代码和开发笔记在 GitHub，可现场演示」。紧接着把话题转到价值：「我做它是为了把上位机的完整闭环自己走一遍，所以特意保留了真实工程会遇到的坑：旧库迁移、切页句柄重建、串口掉线重连、SkiaSharp 中文字体，这些都在代码注释和笔记里有排错过程。」</p>
+<p><strong>加分</strong>：主动补一句局限与改进（见 A4），比硬撑"上过产线"可信得多。工控面试官普遍能分辨量产项目（会问协议对接细节、现场干扰、校准周期、追溯合规、权限与审计），包装一戳就破。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-17">
+<h3 id="q-h3-17">A3 ⭐ 画一下系统的数据流</h3>
+<p><strong>参考答案</strong>（口述 + 手画）：</p>
+<pre><code>appconfig.json / yuzhi.json（配置）
+        ↓
+Task 后台轮询（默认 1000ms）→ ModbusRtuClient.ReadHoldingRegisters(0x03, 从站1, 起始0, 8个)
+        ↓ ushort[8] raw
+QualityCommon.Evaluate(raw, yuzhiCommon.Current)
+        ↓ 两点标定 → double[8] 物理量 / bool?[8] 三态 / Result / NgChannels
+        ├→ Volatile.Write → mainCommon.oriData[8] + mainCommon.data[8]（全局快照）
+        ├→ simpleView×8 三色指示灯（BeginInvoke）
+        └→ Log.Warn 超差报警（10s 限流）
+        ↓ 点「保存数据」
+oriData 快照 → 重新 Evaluate → dataModel → SqlHelper.Insert → SQLite DataModel 表
+        ↓
+totalView 条件查询 / GetStats 合格率 / CSV 导出 ‖ plotView 趋势曲线</code></pre>
+<p><strong>追问</strong>：<code>为什么判定放在采集线程里，不在 UI 里？</code> → 判定是纯逻辑、无 UI 依赖，放采集侧保证每帧数据都带判定；UI 只负责呈现，也便于脱离窗体单测。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-24">
+<h3 id="q-h3-24">A4 ⭐⭐ 如果重做，你会怎么改？（区分度最高的一题）</h3>
+<p><strong>参考答案</strong>（分四层，按重要性）：</p>
+<ol><li><strong>架构</strong>：全局静态 <code>mainCommon.modbusRtuClient</code> 改成 <code>IModbusClient</code> 接口 + 依赖注入，采集逻辑从 <code>mainView</code> 抽到 <code>AcquisitionService</code>，页面通过事件/消息订阅数据，不再靠全局数组隐式传递。</li><li><strong>正确性</strong>：8 个元素逐个 <code>Volatile.Write/Read</code> 不是原子快照，保存时可能读到「一半新一半旧」；改成不可变 <code>RecordSnapshot</code>（带序号 + 时间戳）+ <code>Interlocked.Exchange</code> 整体替换，或用 <code>ReaderWriterLockSlim</code>。</li><li><strong>数据层</strong>：<code>data1..8</code>、<code>testTime</code> 都以 TEXT 存储，范围查询依赖定长字符串的字典序，脆弱；改 REAL / INTEGER 存 Unix 毫秒或 DateTime，补分页 <code>LIMIT/OFFSET</code>、批量事务、异步 I/O、历史表归档。</li><li><strong>可测试性与功能</strong>：补 xUnit 单测、报警去重/确认/声音与报警记录表、配置热重载、多从站轮询、日志结构化。</li></ol>
+<p><strong>加分</strong>：明确说"练习项目量级很小，我改的重点是正确性和可测性，不是盲目上分布式/高并发"。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-31">
+<h3 id="q-h3-31">A5 ⭐ 面试官说「这不就是读个数 + CRUD 吗」，怎么回应？</h3>
+<p><strong>参考答案</strong>：先认同再展开边界条件。「主干确实是读数和入库，但工业场景里麻烦的是异常路径：设备没标定、链路断开、旧版本数据库、切页时句柄重建、后台线程不能碰控件、保存瞬间数据正在被覆盖。我在这些点上分别用了三态判定、重连状态机、幂等迁移、<code>Disposed</code> 生命周期、<code>BeginInvoke</code> + 句柄校验、原始快照重判定。」然后主动反问一句「您现场更关注通信稳定性还是数据追溯这块？我可以展开」。</p>
+<p><strong>注意</strong>：不要抬杠，不要背简历。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-37">
+<h3 id="q-h3-37">A6 ⭐ 为什么用 WinForms 而不是 WPF？</h3>
+<p><strong>参考答案</strong>：「这个项目的目标是快速走通业务闭环，WinForms + SunnyUI 上手快、Designer 拖控件效率高，.NET 8 也支持。WPF 的 MVVM、数据绑定和样式能力更适合长期维护的复杂界面——如果重做且界面要扩展，我会选 WPF + MVVM，把现在的 <code>QualityCommon</code> / <code>SqlHelper</code> 直接复用为 Model/Service 层，只重写 View，这也是我把纯逻辑不依赖 WinForms 抽出来的原因。」</p>
+<p><strong>踩坑</strong>：别说"WPF 过时/WinForms 更好"，容易暴露技术视野。</p>
+</section>
+<hr>
+<h2 id="q-h2-43">B. C# / .NET 基础</h2>
+<section class="q" id="q-h3-44">
+<h3 id="q-h3-44">B1 ⭐⭐ <code>volatile</code> 关键字解决什么问题？项目里哪里用了？</h3>
+<p><strong>参考答案</strong>：<code>volatile</code> 禁止编译器/CPU 对该字段的读写做重排序与缓存优化，保证「一个线程写、其他线程读」时的可见性，<strong>但不保证复合操作原子性</strong>（<code>i++</code> 仍不安全）。<br>项目里三处：<code>mainView.manualDisconnect</code>（UI 线程写、采集线程读）、<code>channelsVisible</code>（隐藏通道标志，采集线程不直接读控件）、以及 <code>mainCommon.oriData/data</code> 数组元素用 <code>Volatile.Write/Read</code>。</p>
+<p><strong>追问</strong>：<code>为什么不用 lock？</code> → 单写多读的布尔标志用 <code>volatile</code> 更轻、不会阻塞采集循环；<code>lock</code> 适合需要保护一段复合逻辑的场景，项目里只在 <code>Log.cs</code> 写文件用了 <code>lock</code>。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-50">
+<h3 id="q-h3-50">B2 ⭐⭐⭐ <code>volatile</code> 能修饰 <code>double</code> 吗？为什么 <code>data</code> 数组用 <code>Volatile.Write</code>？</h3>
+<p><strong>参考答案</strong>：不能。C# 的 <code>volatile</code> 只允许 <code>bool/byte/sbyte/short/ushort/int/uint/char/float</code>、引用类型和以此为基础的枚举；<code>long</code> / <code>double</code> / <code>decimal</code> 在 32 位环境下不保证原子读写，编译器会报 CS0677。<br>所以 <code>mainCommon.data</code>（<code>double[8]</code>）不能声明成 <code>volatile double[]</code> 的元素，改用 <code>System.Threading.Volatile.Write(ref mainCommon.data[k], value)</code> / <code>Volatile.Read(...)</code>，由运行时对该元素做带内存屏障的原子读写。</p>
+<p><strong>加分</strong>：<code>Volatile.Write</code> 是 release 语义、<code>Volatile.Read</code> 是 acquire 语义；它们保证的是该次读写的可见性，<strong>不保证整个数组的一致性</strong>（见 B9 / E6）。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-56">
+<h3 id="q-h3-56">B3 ⭐⭐ 为什么用 <code>bool?</code> 三态，而不是 <code>bool</code> 加一个「是否已标定」字段？</h3>
+<p><strong>参考答案</strong>：<code>bool?</code> 把「没有判定依据」编码进类型本身，<code>null</code> 就是未标定，编译期就会迫使调用方处理三态；<code>Ok[i] == false</code> 才进超差列表，<code>Ok[i] == null</code> 只标记 <code>anyUncalibrated</code>。如果用 <code>bool</code> + 额外标志，两个字段可能不一致，任何漏判分支都会把未标定通道当成不合格，直接导致误报和错误统计。<br>项目里 <code>IsCalibrated</code> 仍保留在 <code>yuzhiModel</code>（判断四个标定参数是否都能解析），但对外结果统一是 <code>bool?</code>。</p>
+<p><strong>追问</strong>：<code>Nullable&lt;bool&gt; 的 == false 会怎样？</code> → <code>null == false</code> 为 <code>false</code>，所以 <code>if (ok[i] == false)</code> 只捞真正的超差，这正是三态好用的地方；用 <code>if (!ok[i].Value)</code> 会在 <code>null</code> 时抛 <code>InvalidOperationException</code>。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-62">
+<h3 id="q-h3-62">B4 ⭐⭐ 采集为什么用 <code>Task.Run(async …)</code> + <code>await Task.Delay</code>，不用 <code>Thread</code> 或 <code>WinForms.Timer</code>？</h3>
+<p><strong>参考答案</strong>：</p>
+<ul><li><code>WinForms.Timer</code> 的 <code>Tick</code> 跑在 UI 线程，串口读取是阻塞 I/O（ReadTimeout 1000ms），会直接卡住界面；代码注释里明确写了 <code>//timer1.Start(); 会卡顿，已用异步方式代替</code>，<code>timer1</code> 现为保留的死代码。</li><li><code>Task.Run</code> 把循环放到线程池，<code>await Task.Delay(ms, token)</code> 是<strong>异步等待不占线程</strong>，且能被 <code>CancellationToken</code> 立即唤醒退出；<code>Thread.Sleep</code> 会霸占线程且无法取消。</li><li>裸 <code>Thread</code> 需要自己管生命周期、异常和取消，CTS 是更现代的做法。</li></ul>
+<p><strong>加分</strong>：<code>Task.Run(async () =&gt; …)</code> 返回的是 <code>Task</code>（内部 async lambda 被正确 unwrap，不会变成 <code>Task&lt;Task&gt;</code>，因为 <code>Task.Run(Func&lt;Task&gt;)</code> 有专门重载）。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-69">
+<h3 id="q-h3-69">B5 ⭐⭐⭐ 为什么 <code>CancellationTokenSource</code> 只 <code>Cancel()</code> 不 <code>Dispose()</code>？</h3>
+<p><strong>参考答案</strong>：<code>mainView</code> 构造里 <code>Disposed += (s,e) =&gt; readCTS.Cancel();</code>。后台任务在循环中还要访问 <code>readCTS.Token</code>、把它传给 <code>Task.Delay(ms, token)</code>；若在窗体销毁瞬间 <code>Dispose()</code> 了 CTS，后台任务再取 Token 可能抛 <code>ObjectDisposedException</code>，变成一次无意义的异常日志甚至掩盖真正的退出路径。这里 CTS 生命周期随页面对象，页面本身在 <code>Form1</code> 里缓存不 Dispose，让 GC 回收即可。</p>
+<p><strong>追问</strong>：<code>那不会泄漏吗？</code> → 单个页面一个 CTS、Cancel 后任务会退出循环，没有注册回调和计时器，属于可接受的取舍；若要严格，可在任务的 <code>finally</code> 里确认循环结束后再 Dispose，前提是所有取 Token 的动作都已完成。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-75">
+<h3 id="q-h3-75">B6 ⭐⭐ <code>try/catch</code> 为什么必须写在 <code>while</code> 里面？</h3>
+<p><strong>参考答案</strong>：写在 <code>while</code> 外面，任何一次串口异常都会跳出整个循环，采集永久停止，只能重开程序；写在循环内，单次失败被 catch、记录（限流）日志、标记断线，下一轮继续走自动重连逻辑。这是"长驻采集任务"的基本骨架：<code>while (!token.IsCancellationRequested) { try { … } catch { … } await Delay(token); }</code>。</p>
+<p><strong>加分</strong>：<code>catch (OperationCanceledException) { break; }</code> 要单独放在通用 <code>catch (Exception)</code> 之前，否则取消会被当成故障记日志。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-81">
+<h3 id="q-h3-81">B7 ⭐ <code>static class mainCommon</code> 的全局状态有什么风险？</h3>
+<p><strong>参考答案</strong>：<code>oriData</code> / <code>data</code> / <code>modbusRtuClient</code> / <code>sqlHelper</code> 都是静态可变字段，任何地方都能改，构成隐式耦合；无接口抽象无法 mock，多线程下需要靠 <code>Volatile</code> 手工维护可见性；多个窗体实例（如果将来有）会共享同一份数据；测试之间会互相污染。<br>改进：定义 <code>IAcquisitionState</code> / <code>IModbusClient</code>，通过构造函数注入；状态用不可变快照 + <code>Interlocked.Exchange</code>。</p>
+<p><strong>追问</strong>：<code>为什么当初还这么写？</code> → 「练习项目为了快速打通闭环，静态类最省事；我清楚它的代价，所以把纯判定逻辑抽成无状态的 <code>QualityCommon</code>，至少核心业务是可测的。」</p>
+</section>
+<hr>
+<section class="q" id="q-h3-87">
+<h3 id="q-h3-87">B8 ⭐⭐ 为什么到处用 <code>CultureInfo.InvariantCulture</code>？</h3>
+<p><strong>参考答案</strong>：标定参数在 JSON 里以 <code>string</code> 保存，解析/格式化如果跟随系统区域设置，在德语/法语等用逗号作小数点的机器上 <code>"17.5"</code> 会解析失败或变成 175；<code>double.ToString("F2", InvariantCulture)</code>、<code>TryParse(..., NumberStyles.Float, InvariantCulture, out v)</code> 保证跨机器一致。数据库里 <code>testTime</code> 固定 <code>yyyy-MM-dd HH:mm:ss</code>，同样配 <code>TryParseExact</code> + InvariantCulture。</p>
+<p><strong>加分</strong>：这也是「数值为什么不该存 TEXT」的一个具体论据。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-93">
+<h3 id="q-h3-93">B9 ⭐⭐⭐ 对数组元素做 <code>Volatile.Write</code> 是"原子快照"吗？</h3>
+<p><strong>参考答案</strong>：不是。每次只保证<strong>单个元素</strong>的读写可见性。采集线程写 8 个元素，保存按钮逐个 <code>Volatile.Read</code> 8 次，中间可能被采集线程插入，读到的 8 个值分属两次采样（TOCTOU / tear）。当前 1s 轮询 + 手动点保存，碰撞概率低，但语义上不严谨。<br>正确做法：把 8 路数据 + 采集时刻 + 序号打包成不可变 <code>RecordSnapshot</code>，采集端一次构造完用 <code>Interlocked.Exchange(ref _current, snapshot)</code> 整体发布；保存端一次 <code>Volatile.Read(ref _current)</code> 拿到完整一致的一帧。或用 <code>lock</code>/<code>ReaderWriterLockSlim</code> 包住读写。</p>
+<p><strong>这题是本项目最容易被深挖的设计缺陷，务必主动会答。</strong></p>
+</section>
+<hr>
+<h2 id="q-h2-99">C. WinForms / UI 线程</h2>
+<section class="q" id="q-h3-100">
+<h3 id="q-h3-100">C1 ⭐ 为什么不能从后台线程直接改控件？会报什么？</h3>
+<p><strong>参考答案</strong>：WinForms 控件绑定在创建它的 UI 线程且不是线程安全的，跨线程访问会抛 <code>InvalidOperationException: 线程间操作无效: 从不是创建控件"xxx"的线程访问它</code>（在调试器附加时更严格）。必须把更新封送回 UI 线程：<code>Invoke</code> / <code>BeginInvoke</code>，或用 <code>SynchronizationContext</code>、<code>Progress&lt;T&gt;</code>。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-105">
+<h3 id="q-h3-105">C2 ⭐⭐⭐ 为什么选 <code>BeginInvoke</code> 而不是 <code>Invoke</code>？</h3>
+<p><strong>参考答案</strong>：</p>
+<ul><li><code>Invoke</code> 是<strong>同步</strong>阻塞，后台线程要等 UI 线程执行完委托；若 UI 线程正在等待后台任务、或窗口句柄正在重建/销毁，容易卡死甚至死锁；采集循环每 1s 一帧，阻塞会拖慢节奏。</li><li><code>BeginInvoke</code> 是<strong>异步投递</strong>（<code>PostMessage</code> 到 UI 消息队列），后台线程立刻返回，UI 忙时最多积压少量帧，不会拖住采集。</li><li>代价：委托执行有延迟、可能积压，所以要点是「帧数据放全局数组，UI 只投递一次刷新动作」，而不是把数据塞进委托队列。</li></ul>
+<p>项目里 <code>mainView.UpdateConnectionUi</code> 和 <code>simpleView.PostToUi</code> 都是这个模式。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-112">
+<h3 id="q-h3-112">C3 ⭐⭐ <code>IsDisposed</code> / <code>IsHandleCreated</code> 校验和 <code>catch (InvalidOperationException)</code> 各防什么？</h3>
+<p><strong>参考答案</strong>（<code>simpleView.PostToUi</code>）：</p>
+<ul><li><code>IsDisposed</code> / <code>!IsHandleCreated</code>：<strong>投递前</strong>过滤，控件已销毁或句柄尚未创建时不调用 <code>InvokeRequired</code>（访问它本身可能触发句柄创建或抛异常）。</li><li>委托内部再判一次 <code>if (!IsDisposed) action()</code>：<strong>执行时</strong>过滤，因为从投递到执行之间窗口可能已被销毁（异步投递的固有时间差）。</li><li><code>catch (InvalidOperationException)</code>：兜底「校验通过的一瞬间句柄被销毁」的竞态，跳过本帧而不是让采集任务崩掉。</li></ul>
+<p><strong>加分</strong>：这三层是"异步封送 + 动态句柄"场景的标准防御，能讲出「校验与执行之间存在竞态窗口」就是满分。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-119">
+<h3 id="q-h3-119">C4 ⭐⭐⭐ <code>HandleDestroyed</code> 和 <code>Disposed</code> 有什么区别？为什么定时器/任务只能挂在 <code>Disposed</code>？</h3>
+<p><strong>参考答案</strong>：</p>
+<ul><li><code>HandleDestroyed</code>：Win32 窗口句柄被销毁时触发，<strong>不代表对象生命周期结束</strong>；句柄常常会被重新创建（<code>HandleCreated</code>），例如改变 <code>Parent</code>、设置某些需要重建句柄的属性、跨顶层容器移动。</li><li><code>Disposed</code>：控件真正被释放、生命周期结束，不会再回来。</li></ul>
+<p>本项目 <code>FormShowHelper.formShow</code> 用「改 <code>Parent</code> + <code>Dock=Fill</code>」切页，会重建句柄；早期把 <code>readCTS.Cancel()</code> / <code>refreshTimer.Stop()</code> 挂在 <code>HandleDestroyed</code>，导致从"阈值设置"切回"数据测量"后采集和刷新永久停止。改为只挂 <code>Disposed</code>，且页面在 <code>Form1</code> 中缓存复用（<code>page ??= factory()</code>，从不 Dispose），问题消失。</p>
+<p><strong>配套</strong>：<code>Load</code> 事件在句柄重建后可能再次触发，所以 <code>mainView_Load</code> 用 <code>initialized</code> 做幂等，防止重复创建 8 张卡片、重复启动采集任务。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-127">
+<h3 id="q-h3-127">C5 ⭐⭐ 讲讲页面切换的实现，<code>Controls.Clear()</code> 为什么不 Dispose？</h3>
+<p><strong>参考答案</strong>：<code>FormShowHelper.formShow(UIPage page, UIPanel host)</code> 做三件事：<code>host.Controls.Clear()</code> → <code>page.Parent = host</code> → <code>page.Dock = Fill</code> + <code>Show()</code>。<code>Controls.Clear()</code> 只解除父子关系，控件对象还活着，正好配合 <code>Form1</code> 里的 <code>page ??= factory()</code> 缓存复用（切页保留采集状态、表格绑定、输入内容）。如果 Dispose 掉，缓存字段还持有已释放对象，下次切回来访问就会抛 <code>ObjectDisposedException</code>。<br><code>ShowPage&lt;T&gt;</code> 还用 try/catch 包住页面构造，单页初始化失败（比如 ScottPlot/SkiaSharp 加载异常）只弹提示，不拖垮 <code>Application.Run</code>。</p>
+<p><strong>加分</strong>：<code>mainView</code> 通过构造函数拿到 <code>Form1</code> 的 <code>uiLight1</code>，用于后台线程更新主窗体连接灯——这是跨页面共享控件的显式注入，比到处 <code>((Form1)this.ParentForm)</code> 强转干净。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-133">
+<h3 id="q-h3-133">C6 ⭐ 按钮点了没反应，你的排查顺序？</h3>
+<p><strong>参考答案</strong>（这是项目里真实踩过的坑，<code>mainView.Designer.cs</code> 有注释「原来漏了这行，所以按钮点了没反应」）：</p>
+<ol><li>搜 <code>View/*.Designer.cs</code> 里该按钮的 <code>Click +=</code>，确认事件是否绑定；同名事件别在 Designer 和 <code>.cs</code> 里绑两次（会执行两遍）。</li><li>确认处理方法签名和控件名一致，方法体是不是空实现。</li><li>确认控件没有被其它面板遮挡、<code>Enabled</code>/<code>Visible</code> 正常、没有半透明覆盖层吃掉点击。</li><li>断点/日志确认是否进方法；若进方法但没效果，再看是不是后台线程/条件分支提前 return。</li><li>检查 <code>Text</code> 与实际功能是否一致（项目里"导出excel"按钮其实导出 CSV，文案误导）。</li></ol>
+<p><strong>加分</strong>：<code>*.Designer.cs</code> 是 WinForms 控件与事件绑定的事实来源，先查它而不是先怀疑业务逻辑。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-140">
+<h3 id="q-h3-140">C7 ⭐ Dock 布局：「隐藏通道」为什么只改一个 <code>Visible</code>？</h3>
+<p><strong>参考答案</strong>：卡片区 <code>uiPanel2.Dock = Top</code>，下方标题与 <code>DataGridView</code> 是 <code>Dock = Fill</code>。WinForms 布局引擎按 Dock 顺序自动排布，把 Top 面板 <code>Visible = false</code> 后，Fill 面板会自动上移占满剩余空间，无需手工改 <code>Location</code>/<code>Size</code>。所以按钮只切 <code>uiPanel2.Visible</code>（并同步 <code>channelsVisible</code> 供后台线程判断），不会留下空白。<br>另：<code>Form1</code> 设 <code>AutoScaleMode = None</code>、项目开 <code>PerMonitorV2</code> 高 DPI，避免缩放导致布局漂移。</p>
+<p><strong>追问</strong>：<code>为什么后台线程要单独存 channelsVisible？</code> → 采集线程不能读控件 <code>Visible</code>（跨线程访问），用 <code>volatile bool</code> 副本判断是否需要投递卡片刷新。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-146">
+<h3 id="q-h3-146">C8 ⭐⭐ 界面卡顿/闪烁你会怎么查？</h3>
+<p><strong>参考答案</strong>：先定位是"数据太慢"还是"重绘太猛"：串口阻塞放 UI 线程 → 改异步；每帧全量重建 DataGridView 数据源 → 用 <code>BindingList&lt;T&gt;</code> 增量更新；大量控件重绘 → 开双缓冲（<code>Helper</code> 里有反射设置 <code>DoubleBuffered</code> 的工具方法，代码中未启用）、批量更新时 <code>SuspendLayout</code>/<code>ResumeLayout</code>；高频刷新灯色 → 降频/合并帧。项目实际做法是「采集在后台、UI 用 <code>BeginInvoke</code> 只刷变化的灯色、表格用 <code>BindingList</code> 追加一条」。</p>
+</section>
+<hr>
+<h2 id="q-h2-151">D. Modbus / 串口 / 采集链路</h2>
+<section class="q" id="q-h3-152">
+<h3 id="q-h3-152">D1 ⭐⭐ 画出 0x03 读保持寄存器的 RTU 请求/响应帧</h3>
+<p><strong>参考答案</strong>：<br>请求（8 字节）：<code>[从站地址 1B][功能码 0x03 1B][起始地址 2B 高字节在前][寄存器数量 2B][CRC16 2B 低字节在前]</code><br>例：从站 1、起始 0x0000、读 8 个 → <code>01 03 00 00 00 08 CRC_L CRC_H</code><br>响应：<code>[地址][0x03][字节数 0x10][16 字节数据（每寄存器 2 字节，高字节在前）][CRC16]</code>，共 1+1+1+16+2 = <strong>21 字节</strong>。<br>RTU 靠 <strong>3.5 个字符时间的总线静默</strong>区分帧边界（不是靠固定长度），CRC 为 CRC16/MODBUS，低字节先发。</p>
+<p><strong>追问</strong>：<code>异常响应长什么样？</code> → 功能码最高位置 1（<code>0x83</code>）+ 异常码（01 非法功能、02 非法地址、03 非法数据值…），且只回一个字节数据。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-158">
+<h3 id="q-h3-158">D2 ⭐⭐ Modbus RTU 与 Modbus TCP 的区别？项目用的是哪个？</h3>
+<p><strong>参考答案</strong>：项目只用 <strong>RTU</strong>（<code>SerialPort</code> + <code>ModbusFactory().CreateRtuMaster(new SerialPortAdapter(...))</code>），<strong>没有实现 TCP</strong>。</p>
+<ul><li>RTU：二进制紧凑帧 + CRC16 + 3.5 字符静默定界，走 RS-485/RS-232，有从站地址。</li><li>TCP：去掉 CRC，前面加 7 字节 MBAP 头（事务标识 2 + 协议标识 2 + 长度 2 + 单元标识 1），走 502 端口，靠 TCP 长度域定界，可多主站并发。</li><li>两者 PDU（功能码 + 数据）相同，所以扩展 TCP 时业务层几乎不用改——这也是我建议抽 <code>IModbusClient</code> 的依据。</li></ul>
+<p><strong>红线</strong>：别把 TCP 说成已实现。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-165">
+<h3 id="q-h3-165">D3 ⭐ 串口参数怎么配？9600 8N1 是什么？为什么要设超时？</h3>
+<p><strong>参考答案</strong>：<code>SerialPort(portName, baudRate=9600, parity=None, dataBits=8, stopBits=One)</code>，<code>Handshake=None</code>，<code>ReadTimeout=WriteTimeout=1000ms</code>。8N1 = 8 数据位、无校验、1 停止位。超时是<strong>必须</strong>的：没有超时，从站不响应时读操作会无限阻塞后台任务（甚至拖住退出），<code>ReadHoldingRegisters</code> 失败后靠异常进入重连流程。<br><code>AppConfig</code> 把 12 项参数（端口、波特率、数据位、停止位、校验、从站、起始地址、通道数、轮询间隔、重连间隔、自动重连开关）落 <code>appconfig.json</code>，枚举以字符串保存再用 <code>Enum.TryParse</code> 转换，<code>Clamp()</code> 把 <code>PollIntervalMs</code> 限制到 <code>[100, 60000]</code>、<code>SlaveId == 0</code> 回退 1。</p>
+<p><strong>加分</strong>：只在<strong>连接成功后</strong>才持久化端口，避免把失败的端口写进配置导致下次启动连错。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-171">
+<h3 id="q-h3-171">D4 ⭐⭐⭐ ABCD / CDAB / BADC / DCBA 是什么？float 为什么要 <code>Array.Reverse</code>？</h3>
+<p><strong>参考答案</strong>：Modbus 寄存器是 16 位大端（高字节在前），但 32/64 位数据如何由多个寄存器拼装没有统一规定，不同厂商有 4 种字序/字节序组合：<code>ABCD</code>（大端、寄存器正序）、<code>CDAB</code>（寄存器互换）、<code>BADC</code>（寄存器内字节互换）、<code>DCBA</code>（全反转）。<br><code>ModbusDataConverter.GetBytesFromRegisters</code> 按 <code>DataFormat</code> 重排字节数组；<code>BitConverter</code> 在 x86/ARM 上通常是小端，所以对 float/double 需要 <code>Array.Reverse</code> 后再 <code>BitConverter.ToSingle/ToDouble</code>，否则数值完全不对。项目默认 <code>DataFormat.ABCD</code>。</p>
+<p><strong>追问</strong>：<code>怎么确认设备用哪种？</code> → 用一个已知值（如 1.0f / 123.456）读回原始寄存器，看字节排列；或查设备手册的"浮点数字节顺序"说明。这是现场联调最常见的坑之一。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-177">
+<h3 id="q-h3-177">D5 ⭐⭐⭐ 讲清楚自动重连状态机</h3>
+<p><strong>参考答案</strong>（<code>mainView.StartRead()</code>）：<br>触发条件四个同时成立：① <code>!client.IsConnected</code> ② <code>!manualDisconnect</code> ③ <code>cfg.AutoReconnect</code> ④ <code>PortName</code> 非空；再加 <code>Environment.TickCount64 - lastReconnect &gt;= ReconnectIntervalMs</code>（默认 3000ms）限流。满足则 <code>TryConnect(port, showMessage:false)</code> 静默重连并更新连接灯。</p>
+<ul><li><strong>为什么要限流</strong>：轮询 1s，若每轮都尝试 <code>SerialPort.Open()</code>，会产生大量异常、日志和端口占用，USB 转串口刚插回时还可能反复失败。</li><li><strong>为什么静默</strong>：后台线程绝不弹 <code>MessageBox</code>，只有用户手动点「连接」才允许提示。</li><li><strong>为什么用 <code>Environment.TickCount64</code> 而非 <code>DateTime.Now</code></strong>：前者是系统启动以来的单调毫秒计数，不受用户改系统时间/NTP 校时影响，做间隔判断更可靠，也不涉及时区。</li><li>同理，采集错误日志、超差报警日志各做 <strong>10s 限流</strong>，防止日志暴涨。</li></ul>
+<p><strong>追问</strong>：<code>manualDisconnect 为什么要是 volatile？</code> → UI 线程写、采集线程读，需要可见性保证；否则采集线程可能一直读到旧值，用户点了断开仍被重连。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-184">
+<h3 id="q-h3-184">D6 ⭐⭐ <code>ReadHoldingRegisters</code> 失败为什么要先 <code>Disconnect()</code> 再 <code>throw</code>？</h3>
+<p><strong>参考答案</strong>：串口异常（设备拔出、线松、CRC 错）后，<code>_isConnected</code> 标志与实际物理链路可能不一致，串口对象也可能处于坏状态。先 <code>Disconnect()</code> 关闭并释放 <code>SerialPort</code>/Master、把 <code>IsConnected</code> 置 false，抛出后由外层 catch 更新 UI 为"重连中…"，下一轮循环才会进入重连分支。若不置 false，下一轮以为还连着继续读，一直抛异常且不触发重连。</p>
+<p><strong>加分（主动暴露不足）</strong>：封装里只有 <code>ReadHoldingRegisters</code> 做了这件事，其它读方法多是 <code>Console.WriteLine</code> + <code>throw</code>，异常处理不一致，也有一部分日志没走 <code>Log</code>；这是我会统一重构的点。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-190">
+<h3 id="q-h3-190">D7 ⭐⭐ 轮询周期 1s 会不会丢数据？要提到 100ms 怎么改？</h3>
+<p><strong>参考答案</strong>：先讲清楚取舍：Modbus RTU 是主从问答，上位机只能拿到「轮询瞬间」的值，1s 周期意味着最快 1s 一个采样点，物理上确实会漏掉下位机两次轮询之间的变化——这不是丢包，是采样率设计。<br>改进路径：① 缩短周期并实测 9600 波特下一帧 RTU 约 21 字节的传输时间（约 20ms 量级）+ 从站响应时间，留出余量；② 单帧批量读 8 个寄存器（项目已经这么做，避免 8 次往返）；③ 通信与入库解耦：采集只入内存环形缓冲/队列，另起消费者批量写库；④ 关键场景改成下位机缓存 + 时间戳批量上传，或换中断/事件上报协议；⑤ 每个采样点带时间戳，避免用 <code>DateTime.Now</code> 在入库时才打时间。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-195">
+<h3 id="q-h3-195">D8 ⭐ <code>TestConnection</code> 和 <code>GetAvailablePorts</code> 分别做什么？</h3>
+<p><strong>参考答案</strong>：<code>TestConnection(timeoutMs)</code> 临时改 <code>ReadTimeout</code> 读 1 个寄存器做链路测活，用完恢复；<code>GetAvailablePorts()</code> 直接返回 <code>SerialPort.GetPortNames()</code> 供下拉框枚举。<code>mainView.FillPorts()</code> 枚举端口并优先选中配置里上次成功的 <code>PortName</code>。</p>
+<p><strong>追问</strong>：<code>拔掉 USB 后下拉框里的 COM 口还在吗？</code> → 需要重新枚举；项目在 <code>Load</code> 时枚举一次，运行中热插拔不会自动刷新，这也是可改进点。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-201">
+<h3 id="q-h3-201">D9 ⭐⭐ 从站地址、起始地址、通道数是怎么串起来的？</h3>
+<p><strong>参考答案</strong>：<code>AppConfigStore.Load()</code> 在 <code>mainView</code> 构造时读 <code>appconfig.json</code> → <code>SlaveId = 1</code> 赋给 <code>mainCommon.modbusRtuClient.SlaveId</code>；采集循环 <code>ReadHoldingRegisters(cfg.StartAddress=0, (ushort)cfg.ChannelCount=8)</code> 一次读回 8 个 <code>ushort</code>，与 <code>yuzhiConfig.channels</code>（启动时 <code>Pad()</code> 补齐/截断到 8 个）、<code>QualityCommon.Evaluate</code> 里的 <code>Math.Min(raw.Length, config.channels.Count)</code> 对齐。通道号在结果里从 <strong>1</strong> 开始（<code>ng.Add(i + 1)</code>），界面卡片也是 <code>SetChannelNumber(i+1)</code>。</p>
+<p><strong>追问</strong>：<code>配置改成 16 通道会怎样？</code> → <code>Evaluate</code> 按 <code>Math.Min</code> 只算配置里有的 8 个，<code>oriData/data</code> 数组仍是 8，会截断；要扩展需要同步改数组、表结构（data1..data8）、UI 卡片数和 Designer 表格列——这正是当前"8 通道写死"的设计局限。</p>
+</section>
+<hr>
+<h2 id="q-h2-207">E. 标定 / 判定 / 业务正确性</h2>
+<section class="q" id="q-h3-208">
+<h3 id="q-h3-208">E1 ⭐⭐⭐ 写出两点线性标定公式并推导，说明除零保护</h3>
+<p><strong>参考答案</strong>（<code>yuzhiModel.TryConvert</code>）：取两个标准件：低点原始计数 <code>rawLow</code> 对应物理量 <code>valueLow</code>，高点 <code>rawHigh</code> 对应 <code>valueHigh</code>。设线性关系 <code>value = k·raw + b</code>，则<br><code>k = (valueHigh - valueLow) / (rawHigh - rawLow)</code>，<code>b = valueLow - k·rawLow</code><br>代入得 **<code>value = valueLow + (raw - rawLow) * (valueHigh - valueLow) / (rawHigh - rawLow)</code>**。<br>防护：<code>rawSpan == 0</code> 或 <code>valueSpan == 0</code> 时返回 <code>false</code>（除以零/退化）；四个参数用 <code>InvariantCulture</code> 解析，任一失败即视为未标定；结果再检查 <code>NaN</code>/<code>Infinity</code>；未标定时 <code>Evaluate</code> 用原始值 <code>raw[i]</code> 回退显示，但 <code>Ok[i] = null</code>。</p>
+<p><strong>追问</strong>：<code>反向量程（rawHigh &lt; rawLow）能算吗？</code> → 数学上能（斜率为负），要看业务是否允许传感器反向安装；当前代码没有禁止。<code>raw</code> 超出 <code>[rawLow, rawHigh]</code> 会<strong>线性外推</strong>，可能在量具量程外给出看似合理的数，实际应加范围限制或标记"超量程"——这是我会补的一条。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-214">
+<h3 id="q-h3-214">E2 ⭐⭐ 整体判定为什么是「超差 &gt; 未标定 &gt; 合格」？</h3>
+<p><strong>参考答案</strong>：<code>result = ng.Count &gt; 0 ? "不合格" : anyUncalibrated ? "未标定" : "合格"</code>。安全优先：只要有任一通道明确超差，这批数据就不可放行，即使其它通道还没标定；全部通道都合格且有标定依据，才能给"合格"。"未标定"是数据可信度不足，不是质量结论，单独成一类便于统计和追溯。</p>
+<p><strong>加分</strong>：<code>NgChannels</code> 用 <code>string.Join(",", ng)</code> 记录具体通道号（1 起），查询页有独立的「判定」和「不合格通道」两列。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-220">
+<h3 id="q-h3-220">E3 ⭐⭐⭐ 为什么保存时要从 <code>oriData</code> 快照<strong>重新判定</strong>，不直接取界面上的值？</h3>
+<p><strong>参考答案</strong>（本项目最能体现正确性意识的一题）：</p>
+<ol><li>界面显示值可能<strong>过期</strong>：用户隐藏通道卡片时采集线程跳过刷新、切到别的页面时也不会更新卡片，表格里的数未必是最新一帧。</li><li>界面显示的是<strong>物理量字符串</strong>（<code>F2</code> 格式化后），已经丢了未标定/三态信息和精度，无法再判定。</li><li>标定/阈值配置可能在两次刷新之间被改过，界面值属于旧配置。</li></ol>
+<p>所以 <code>uiButton3_Click</code> 用 <code>Volatile.Read</code> 取 <code>oriData[8]</code> 原始计数快照 → <code>QualityCommon.Evaluate(snapshot, yuzhiCommon.Current)</code> 重新算 → <code>ToStrings(F2 + InvariantCulture)</code> → 组装 <code>dataModel</code>（含 <code>result</code> / <code>ngChannels</code>）→ <code>SqlHelper.Insert</code>。<strong>库里的数据必须与判定同源同帧</strong>。</p>
+<p><strong>加分</strong>：入库成功才 <code>bindingList.Add(record)</code>，写库失败不会在界面留下"假记录"。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-228">
+<h3 id="q-h3-228">E4 ⭐⭐ <code>QualityCommon</code> 为什么不放进 <code>mainView</code>？</h3>
+<p><strong>参考答案</strong>：单一职责 + 可测试性 + 一致性。判定是纯函数（输入 <code>ushort[]</code> + 配置，输出 <code>QualityResult</code>），不引用 WinForms、不碰数据库和串口，所以：① 采集线程和保存按钮两处调用同一份逻辑，不会出现"显示一套、入库一套"；② 可以用临时控制台工程（ProjectReference 引用主项目）脱离窗体和硬件实跑验证；③ 将来换 WPF/Web 可以直接复用。</p>
+<p><strong>红线</strong>：绝不在 UI 里重写一遍 if/else 判定——这是这类项目最常见的 bug 来源。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-234">
+<h3 id="q-h3-234">E5 ⭐⭐ 配置加载做了哪些防御？</h3>
+<p><strong>参考答案</strong>：<code>yuzhiCommon.Load()</code>：反序列化 <code>yuzhi.json</code>，<code>Pad()</code> 补齐/截断 <code>channels</code> 到 8 个（防止手改 JSON 少通道导致索引越界）、刀补数组补齐到 4 组，逐个 <code>Normalize()</code> 把非法数值回退为空串/<code>"0"</code>，首次运行自动生成默认文件；<code>Save()</code> 用 <code>WriteIndented</code> 便于人工检查。<code>AppConfig.Clamp()</code> 把轮询间隔钳到 <code>[100, 60000]</code>、从站 0 回退 1、枚举字符串 <code>Enum.TryParse</code> 兜底。</p>
+<p><strong>追问</strong>：<code>运行中改 JSON 生效吗？</code> → 不生效，两个配置都只在页面构造时 <code>Load()</code> 一次，没有热重载（可加 <code>FileSystemWatcher</code> 或界面「重新加载」按钮）。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-240">
+<h3 id="q-h3-240">E6 ⭐⭐⭐ 8 路数据逐元素读写会有什么问题？怎么改？（与 B9 同考点，换个问法）</h3>
+<p><strong>参考答案</strong>：见 B9。核心词：<strong>非原子快照 / 撕裂读 / TOCTOU</strong>。改法：不可变快照对象 + <code>Interlocked.Exchange</code> 一次发布；或 <code>lock</code> / <code>ReaderWriterLockSlim</code> 包住整组读写；快照里带 <code>Sequence</code> 和 <code>Timestamp</code>，保存时把序号一并入库，方便追溯。</p>
+<p><strong>面试官真正想听</strong>：你能不能意识到「对单个元素加内存屏障 ≠ 对一组数据加事务」。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-246">
+<h3 id="q-h3-246">E7 ⭐ 为什么 <code>dataModel</code> 的 8 个值用 <code>string</code>？</h3>
+<p><strong>参考答案</strong>：为了直接绑定 <code>DataGridView</code> 的 <code>DataPropertyName</code> 并显示 <code>F2</code> 格式，也为了兼容早期 JSON/表结构，实现简单。代价：无法在 SQL 里做数值比较/聚合、排序按字典序、跨区域解析风险、精度只能靠格式化约定。改进是 Model 层用 <code>double?</code>，持久化用 <code>REAL</code>，显示层再格式化（responsibility 归 View）。</p>
+<p><strong>追问</strong>：<code>那统计合格率怎么做的？</code> → 用的是 <code>result</code> 文本列的 <code>SUM(CASE WHEN result='不合格' …)</code>，不依赖 <code>dataN</code> 数值列。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-252">
+<h3 id="q-h3-252">E8 ⭐⭐ 「保存数据」这一按钮的完整执行链是什么？</h3>
+<p><strong>参考答案</strong>：<code>Volatile.Read(oriData[0..7])</code> 取快照 → <code>QualityCommon.Evaluate</code> 重新判定 → <code>ToStrings</code> 格式化 8 个物理量 → 组装 <code>dataModel</code>（<code>testTime</code> = <code>DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")</code>、<code>projectName</code> 取输入框、判定、超差通道）→ <code>SqlHelper.Insert</code> 写库并返回自增 Id → <code>bindingList.Add(record)</code> 上表格 → 异常时 <code>Log.Error</code> + 提示，表格不添加。<br>对应页面：查询统计可按时间/产品/通道查、导出 CSV、看合格率；趋势曲线页按日期+通道画历史。</p>
+</section>
+<hr>
+<h2 id="q-h2-257">F. SQLite / 数据层</h2>
+<section class="q" id="q-h3-258">
+<h3 id="q-h3-258">F1 ⭐ 说说表结构和索引</h3>
+<p><strong>参考答案</strong>：单表 <code>DataModel</code> 13 列：<code>Id INTEGER PRIMARY KEY AUTOINCREMENT</code>、<code>testTime TEXT</code>、<code>projectName TEXT</code>、<code>data1..data8 TEXT</code>、<code>result TEXT</code>、<code>ngChannels TEXT</code>；<code>CREATE INDEX IF NOT EXISTS IX_DataModel_testTime ON DataModel(testTime)</code> 支撑按时间范围查询。当前是单机本地库（<code>AppContext.BaseDirectory/data.db</code>），约 14 行历史测试数据。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-263">
+<h3 id="q-h3-263">F2 ⭐⭐⭐ 旧版本数据库缺列，怎么做的幂等迁移？为什么 <code>CREATE TABLE IF NOT EXISTS</code> 不够？</h3>
+<p><strong>参考答案</strong>：<code>CREATE TABLE IF NOT EXISTS</code> 在表已存在时<strong>什么都不做</strong>，不会补列，所以老库里没有 <code>result</code>/<code>ngChannels</code>，<code>INSERT</code> 直接报 <code>no such column: result</code>；也不能让用户手工删库（历史数据会丢）。<br>迁移四步（<code>SqlHelper.InitDatabase()</code>，每次启动都跑，可重复执行）：</p>
+<ol><li><code>PRAGMA table_info(DataModel)</code> 读出现有列名到 <code>HashSet&lt;string&gt;</code>；</li><li>缺失的列逐个 <code>ALTER TABLE DataModel ADD COLUMN result TEXT</code> / <code>ngChannels TEXT</code>（SQLite 的 ADD COLUMN 无法"IF NOT EXISTS"，所以必须先探测）；</li><li><code>UPDATE DataModel SET result='未标定' WHERE result IS NULL OR result=''</code> 回填历史行；</li><li><code>CREATE INDEX IF NOT EXISTS</code> 补索引。</li></ol>
+<p>已用含 14 行历史数据的旧库验证：迁移后旧行 <code>result='未标定'</code>、<code>ngChannels</code> 为 NULL。</p>
+<p><strong>加分</strong>：能说清 <code>ExecuteReader</code> 里 <code>reader.GetString(1)</code> 取的是 <code>PRAGMA table_info</code> 结果的 <strong>name</strong> 列（cid=0, name=1）。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-271">
+<h3 id="q-h3-271">F3 ⭐⭐ <code>last_insert_rowid()</code> 为什么要和 INSERT 用同一个连接？</h3>
+<p><strong>参考答案</strong>：<code>last_insert_rowid()</code> 返回的是<strong>当前连接</strong>上最后一次成功插入的 rowid，是连接级状态而非全局；换连接（尤其连接池复用/新建）可能拿到 0 或别人的 Id。项目在 <code>Insert</code> 里用同一个 <code>SqliteConnection</code> 先 <code>ExecuteNonQuery()</code> 执行参数化 INSERT，再单独 <code>SELECT last_insert_rowid()</code> 用 <code>ExecuteScalar()</code> 取 Id。</p>
+<p><strong>追问</strong>：<code>写成 INSERT ...; SELECT last_insert_rowid(); 一条语句行吗？</code> → 在 Microsoft.Data.Sqlite 下可行（驱动会推进多结果集，<code>ExecuteScalar</code> 能拿到正确 Id，不是 bug），项目改成两步写法只是为了语义更明确、避免依赖驱动的隐式行为。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-277">
+<h3 id="q-h3-277">F4 ⭐⭐ 为什么 .db 文件删不掉 / 被占用？</h3>
+<p><strong>参考答案</strong>：<code>Microsoft.Data.Sqlite</code> 默认开启连接池，<code>using</code> 释放连接只是归还池中，底层文件句柄仍被进程持有，Windows 上就不能删除/覆盖文件。测试或升级时先 <code>SqliteConnection.ClearAllPools()</code>（或在连接串里 <code>Pooling=False</code>），并确保所有 reader/command/connection 都已释放。<br>项目代码里没有显式管理连接池，每个方法 <code>using var connection = new SqliteConnection(...)</code> 即开即关——简单可靠，但删库/替换数据库文件时要记得清池。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-282">
+<h3 id="q-h3-282">F5 ⭐⭐ 动态拼 WHERE 会不会 SQL 注入？</h3>
+<p><strong>参考答案</strong>：不会，因为<strong>值</strong>全部走 <code>AddWithValue</code> 参数（<code>@startTime</code> / <code>@endTime</code> / <code>@projectName</code>），只有<strong>条件片段</strong>（要不要加这一段 AND）由代码按布尔开关拼接，用户输入不参与 SQL 文本。<code>AddParameters</code> 里对 <code>null</code> 统一转 <code>DBNull.Value</code>，<code>MapToModel</code> 读字段用 <code>as string ?? ""</code>，<code>result</code> 缺失回退 <code>"未标定"</code>。</p>
+<p><strong>加分</strong>：<code>NormalizeTime()</code> 把 <code>/</code>、<code>.</code> 统一成 <code>-</code>，<code>TryParseExact("yyyy-MM-dd HH:mm:ss")</code> 解析失败时<strong>视为不加该条件</strong>而不是拼进 SQL；结束日期只给 10 位时补到 <code>23:59:59</code>，避免漏掉当天数据。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-288">
+<h3 id="q-h3-288">F6 ⭐⭐ 合格率为什么在 SQL 里算，不拉回内存算？</h3>
+<p><strong>参考答案</strong>：<code>SELECT COUNT(*), SUM(CASE WHEN result='不合格' THEN 1 ELSE 0 END) FROM DataModel{where}</code>，<code>rate = (total - ng) * 100.0 / total</code>。好处：只回传两个整数、与数据量无关；条件复用同一套参数化 WHERE，保证「表格里的记录」和「统计数字」口径一致；避免把全表读进内存再 LINQ 统计。<br>注意回答时补一句 <code>total == 0</code> 的除零保护和"未标定"是否计入合格率的分母口径（本项目未标定不算 NG，会计入分母，这是个可讨论的业务定义）。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-293">
+<h3 id="q-h3-293">F7 ⭐⭐ <code>testTime</code> 是 TEXT，为什么字符串比较能做时间范围查询？</h3>
+<p><strong>参考答案</strong>：因为格式被严格固定成 <code>yyyy-MM-dd HH:mm:ss</code>（定长、年月日时分秒按高位到低位排列、补零），字典序与时间序完全一致，<code>&gt;= @startTime AND &lt;= @endTime</code> 才成立。这是"约定优于类型"的做法，很脆弱：一旦有人写入 <code>2026-11-3 9:5:1</code> 或带时区/毫秒，排序立刻错乱。改进是存 <code>INTEGER</code> Unix 毫秒或 ISO 8601 + 严格校验，或用 SQLite 的日期函数配合统一格式。索引 <code>IX_DataModel_testTime</code> 让范围扫描走索引。</p>
+<p><strong>加分</strong>：<code>GetTimeRange()</code> 用 <code>MIN/MAX(testTime)</code> + <code>TryParseExact</code> 给查询页的日期控件定边界。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-299">
+<h3 id="q-h3-299">F8 ⭐⭐ CSV 导出为什么要写 BOM？按钮写「导出excel」有问题吗？</h3>
+<p><strong>参考答案</strong>：<code>UTF8Encoding(true)</code> 写 UTF-8 BOM，Excel 双击打开时会据此识别 UTF-8，否则中文按系统 ANSI（GBK）解释会乱码。<code>Csv()</code> 用双引号包裹字段、字段内双引号翻倍（<code>"</code> → <code>""</code>），处理产品名里的逗号/引号/换行；<code>SaveFileDialog</code> 过滤 <code>*.csv</code>。<br>文案「导出excel」名不副实——实际没有用 EPPlus/ClosedXML/NPOI，也不生成 <code>.xlsx</code>，只是 Excel 能打开的 CSV。这是要在简历和面试里主动纠正的点，别把 CSV 说成 Excel 导出。</p>
+</section>
+<hr>
+<h2 id="q-h2-304">G. 可视化（ScottPlot 5）</h2>
+<section class="q" id="q-h3-305">
+<h3 id="q-h3-305">G1 ⭐⭐⭐ 曲线图中文变成方框 □，根因和修法？</h3>
+<p><strong>参考答案</strong>（<code>plotView.ApplyChineseFont</code>）：ScottPlot 5 默认字体 <code>Segoe UI</code> 不含 CJK 字形，而 SkiaSharp 自己绘制文本，<strong>不会走 WinForms/GDI+ 的字体回退机制</strong>，缺字就画成豆腐块 □（不是编码问题，字符串本身是对的）。<br>修法两步：<code>string font = ScottPlot.Fonts.Detect("通道趋势测量值检测时间")</code> 用中文样本探测系统中可用的中文字体（本机实测 <code>Microsoft YaHei UI</code>）→ <code>plot.Font.Set(font)</code> 设置全局（注意会影响 <code>Fonts.Default</code>）→ <strong>额外</strong> <code>plot.Legend.FontName = font</code>，因为图例字体是独立属性，<code>Font.Set</code> 不覆盖它。</p>
+<p><strong>验证</strong>：用 SkiaSharp <code>plot.Render(canvas, 900, 450)</code> 离屏渲染出 PNG 检查中文，不必启动窗体——这个"不启 UI 验证渲染"的思路很加分。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-311">
+<h3 id="q-h3-311">G2 ⭐ 时间轴怎么画的？</h3>
+<p><strong>参考答案</strong>：把 <code>DateTime</code> 用 <code>ToOADate()</code> 转成 double 作为 X 值（OLE 自动化日期，1 天 = 1.0），<code>Add.Scatter(xs, ys)</code> 画线，再 <code>Axes.DateTimeTicksBottom()</code> 让底部刻度按日期时间格式化；标题/XLabel/YLabel/LegendText 用中文（配合 G1 的字体设置）。每次查询先 <code>Plot.Clear()</code> 再重建，<code>Refresh()</code> 重绘。</p>
+<p><strong>追问</strong>：<code>OADate 精度够吗？</code> → double 表示天数，毫秒级采样点够用；若要长期高频数据，可改成相对秒数或 <code>DateTime</code> 轴 + 自定义刻度。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-317">
+<h3 id="q-h3-317">G3 ⭐ 为什么 <code>plotView</code> 的按钮事件要在 <code>.cs</code> 里手动绑？</h3>
+<p><strong>参考答案</strong>：Designer 里 <code>plotView</code> 只绑了 <code>Load</code>，查询按钮的 <code>uiButton1.Click += uiButton1_Click</code> 是在代码里补的（阈值页的 8 个通道面板、4 个刀补按钮同理）。这提醒我们：**事件绑定事实来源是 <code>*.Designer.cs</code>**，有的页面 designer 生成、有的手动补，排查"按钮没反应"时两边都要看，且同一事件不要在两处重复绑定。</p>
+</section>
+<hr>
+<h2 id="q-h2-322">H. 架构 / 设计 / 可维护性</h2>
+<section class="q" id="q-h3-323">
+<h3 id="q-h3-323">H1 ⭐⭐ 项目里为什么同时存在 <code>TICP.*</code> 和 <code>WinFormsApp3.*</code> 两个命名空间？</h3>
+<p><strong>参考答案</strong>：项目文件从 <code>WinFormsApp3.csproj</code> 改名成 <code>TICP.csproj</code> 后，<code>RootNamespace</code> 随之变成 <code>TICP</code>，于是后加的 <code>Common/Helper/Model/Properties/Program</code> 都是 <code>TICP.*</code>；而 <code>Form1</code> 和 5 个 <code>View/*</code> 页面保留了 <code>WinFormsApp3.*</code>，因为它们的 <code>.Designer.cs</code> 与 <code>.resx</code> 嵌入资源名绑定在旧命名空间上，只改一半会报 <code>CS0234</code>（类型或命名空间不存在）。历史遗留的 <code>using WinFormsApp3.Helper/Model</code> 已清理干净。</p>
+<p><strong>加分</strong>：能讲出 <code>.resx</code> 的嵌入资源清单是按「命名空间.类名.resources」解析的，改名必须同步改资源逻辑名，否则运行时 <code>ResourceManager</code> 找不到资源——这正是没全量迁移的现实原因。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-329">
+<h3 id="q-h3-329">H2 ⭐⭐ 讲一下分层，以及它的问题</h3>
+<p><strong>参考答案</strong>：<code>Model</code>（<code>dataModel</code> 记录、<code>yuzhiModel</code> 标定数学）→ <code>Common</code>（全局状态 <code>mainCommon</code>、配置 <code>AppConfigStore</code>/<code>yuzhiCommon</code>、纯逻辑 <code>QualityCommon</code>）→ <code>Helper</code>（<code>ModbusRtuClient</code> 通信、<code>SqlHelper</code> 存储、<code>Log</code>、<code>FormShowHelper</code>）→ <code>View</code>/<code>Form1</code>（SunnyUI 界面）。<br>问题：<code>mainCommon</code> 把状态、通信客户端、数据库访问全塞进一个静态类，View 直接读全局数组，层与层之间是隐式耦合；没有接口、没有 DI、没有事件总线，采集逻辑还写在 <code>mainView</code> 里。改法见 A4。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-334">
+<h3 id="q-h3-334">H3 ⭐⭐⭐ 你怎么给这个项目加单元测试？</h3>
+<p><strong>参考答案</strong>：优先测纯逻辑、不测控件：</p>
+<ul><li><code>yuzhiModel.TryConvert</code>：正常两点、除零、参数缺失、NaN/Infinity、反向量程、超量程外推；</li><li><code>QualityCommon.Evaluate</code>：全合格、单通道超差、混合未标定、优先级、<code>NgChannels</code> 编号从 1 开始、通道数不匹配时 <code>Math.Min</code>；</li><li><code>AppConfig.Clamp</code> / <code>ToStopBits</code> / <code>NormalizeTime</code>；</li><li><code>SqlHelper</code>：用内存 SQLite（<code>Data Source=:memory:</code>，注意要保持连接打开）或临时文件库，测迁移幂等（跑两次 InitDatabase）、Insert 返回 Id、条件查询、GetStats、CSV 转义。</li></ul>
+<p>通信层要可测必须抽 <code>IModbusClient</code> 并写 Fake 从站；UI 层用 MVP/MVVM 把逻辑挪出 View 再测。当前项目<strong>没有单元测试项目</strong>，只用临时控制台工程做过实跑验证——这点要如实说。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-341">
+<h3 id="q-h3-341">H4 ⭐⭐ 数据量变大会怎么改？</h3>
+<p><strong>参考答案</strong>：① 查询加 <code>LIMIT/OFFSET</code>（或键集分页）+ 总数统计，别 <code>GetAll()</code> 全量加载；② 采集与入库解耦：内存队列 + 批量事务（<code>BEGIN/COMMIT</code> 每 N 条），SQLite 单条自动提交很慢；③ 写库改异步 I/O，避免 UI 线程等；④ 分区/按月归档历史表，热数据留主表；⑤ 数值列改 REAL/INTEGER 并加复合索引；⑥ 趋势曲线做降采样（LTTB / 按时间桶聚合），不要把几万点全丢给 ScottPlot；⑦ 加 WAL 模式提升读写并发。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-346">
+<h3 id="q-h3-346">H5 ⭐⭐ 报警机制现在做到哪一步？还缺什么？</h3>
+<p><strong>参考答案</strong>：现状 = 采集循环里 <code>q.HasNg</code> 时 <code>Log.Warn($"通道 [{q.NgChannels}] 超差")</code> + 10s 限流，卡片灯变红；<code>simpleView</code> 第二个灯泡恒灰，注释写「保留给报警闪烁，暂不启用」。<br>缺：去重/状态机（从"超差"到"恢复"才记一条，而不是每帧刷）、声光提示与弹窗、操作员确认与备注、报警记录表与查询、分级（预警/严重）、与停机联锁。补齐时会把报警做成事件，由独立 <code>AlarmService</code> 订阅判定结果，而不是塞进采集循环。</p>
+</section>
+<hr>
+<section class="q" id="q-h3-351">
+<h3 id="q-h3-351">H6 ⭐ 全局异常和日志是怎么设计的？</h3>
+<p><strong>参考答案</strong>：<code>Program.cs</code> 挂 <code>Application.ThreadException</code>（UI 线程未处理异常）+ <code>AppDomain.UnhandledException</code>（非 UI 线程），统一 <code>Log.Error</code> + MessageBox；对堆栈含 <code>WmDpiChangedBeforeParent</code> / <code>Font.ToHfont</code> 的高频 GDI+ 字体异常只记日志不弹窗，避免骚扰。<code>Log</code> 按 <code>Logs/yyyy-MM-dd/{Info,Warn,Error}/log_yyyy-MM-dd.txt</code> 分目录，<code>lock</code> 串行写，且整体 try/catch 吞掉日志自身的故障（日志不能把主程序搞崩）。<br>可改进：结构化日志（JSON + 级别 + 通道 + 耗时）、按大小滚动、异步写入、集中采集。</p>
+</section>
+<hr>
+<h2 id="q-h2-356">I. 现场排错情景题（面试官最爱问"如果…你查哪里"）</h2>
+<section class="q" id="q-h3-357">
+<h3 id="q-h3-357">I1 点「隐藏通道」没反应</h3>
+<p><strong>参考答案</strong>：先查 <code>mainView.Designer.cs</code> 有没有 <code>uiButton2.Click += uiButton2_Click;</code>（项目里就是漏绑过，注释有记录）；再看处理函数是否切了 <code>uiPanel2.Visible</code> 和 <code>channelsVisible</code>；最后确认没有在 Designer 与代码里重复绑定。</p>
+</section>
+<section class="q" id="q-h3-360">
+<h3 id="q-h3-360">I2 从「阈值设置」切回「数据测量」后，采集和当前值刷新都停了</h3>
+<p><strong>参考答案</strong>：查生命周期挂载点。<code>FormShowHelper.formShow</code> 改 <code>Parent</code> 会重建句柄并触发 <code>HandleDestroyed</code>，若在那里 <code>readCTS.Cancel()</code> / <code>refreshTimer.Stop()</code>，切回来就不会恢复（页面还是缓存的那个对象，不会重新构造）。修法：改挂 <code>Disposed</code>，<code>Load</code> 加 <code>initialized</code> 幂等，CTS 只 Cancel 不 Dispose。</p>
+</section>
+<section class="q" id="q-h3-364">
+<h3 id="q-h3-364">I3 曲线标题/图例中文全是 □</h3>
+<p><strong>参考答案</strong>：不是编码问题，是 ScottPlot 5 默认 <code>Segoe UI</code> 无中文字形 + SkiaSharp 不做字体回退。<code>Fonts.Detect(中文样本)</code> → <code>plot.Font.Set(font)</code> → 再单独设 <code>plot.Legend.FontName</code>（图例不被 <code>Font.Set</code> 覆盖）。离屏 <code>Render</code> 出 PNG 验证。</p>
+</section>
+<section class="q" id="q-h3-368">
+<h3 id="q-h3-368">I4 用旧版本留下的 <code>data.db</code> 一保存就报 <code>no such column: result</code></h3>
+<p><strong>参考答案</strong>：<code>CREATE TABLE IF NOT EXISTS</code> 不给已存在的表补列。用 <code>PRAGMA table_info</code> 探测 → <code>ALTER TABLE ADD COLUMN</code> → <code>UPDATE</code> 回填 → <code>CREATE INDEX IF NOT EXISTS</code>；若急着恢复，先备份 .db 再手工执行同样的 ALTER。注意默认连接池可能锁文件，替换前 <code>SqliteConnection.ClearAllPools()</code>。</p>
+</section>
+<section class="q" id="q-h3-372">
+<h3 id="q-h3-372">I5 拔掉 USB 转串口后日志文件暴涨、界面卡死</h3>
+<p><strong>参考答案</strong>：三处一起看：① 采集线程是否每轮都抛异常并记日志 → 加 10s 限流；② 是否每轮都尝试重连 → 用 <code>Environment.TickCount64</code> 做 3s 间隔；③ 后台线程是否弹了 MessageBox（同步阻塞且不属于 UI 线程）→ 一律改为更新状态灯 + 日志，只有用户手动操作才允许弹窗；④ 失败后要 <code>Disconnect()</code> 把 <code>IsConnected</code> 置 false，否则下一轮仍以为在线。</p>
+</section>
+<section class="q" id="q-h3-376">
+<h3 id="q-h3-376">I6 关闭程序再打开，提示 COM 口被占用</h3>
+<p><strong>参考答案</strong>：<code>SerialPort</code> 未释放或后台任务没退出，进程残留（也可能是别的程序占用）。检查退出路径：<code>Disposed</code> 里 <code>Cancel()</code> → 捕获 <code>OperationCanceledException</code> 退出循环 → <code>finally</code> 中 <code>Disconnect()</code>/<code>Dispose()</code> 串口；<code>Application.Run</code> 结束后确认没有前台线程存活（Task 默认线程池是后台线程，不会阻止进程退出，裸 <code>Thread</code> 前台线程会）。另外 <code>Disconnect()</code> 里无条件先清理旧连接再 <code>Open()</code>，避免同进程内重复占用。</p>
+</section>
+<section class="q" id="q-h3-380">
+<h3 id="q-h3-380">I7 保存数据成功但表格没出现新行 / 出现两行</h3>
+<p><strong>参考答案</strong>：先看是不是 <code>SqlHelper.Insert</code> 抛异常被 catch 后仍执行了 <code>bindingList.Add</code>（项目是「先写库成功后才 Add」，正确）；再看同一事件是否在 Designer 和 <code>.cs</code> 里绑了两次导致插入两次（会看到 Id 连续跳号）；再看 <code>DataGridView</code> 的 <code>DataPropertyName</code> 是否与 <code>dataModel</code> 属性名一致、<code>AutoGenerateColumns</code> 设置是否把动态追加的判定列冲掉。</p>
+</section>
+<hr>
+<h2 id="q-h2-386">J. 行为面 / HR</h2>
+<section class="q" id="q-h3-387">
+<h3 id="q-h3-387">J1 怎么证明这个项目是你自己写的？</h3>
+<p><strong>参考答案</strong>：① Git 提交历史能还原演进过程（分阶段提交：界面修复 → 业务闭环 → 稳定性修复），不是一次性 dump；② 能讲出每个「为什么」和踩过的坑（漏绑事件、句柄重建、旧库缺列、中文方框），以及代码注释里留下的当时的判断；③ 有配套排错笔记/教程文档；④ 可以现场改一段代码或加个功能（比如加一个通道、把导出改成 xlsx、给判定写个单测）。</p>
+<p><strong>加分</strong>：主动说「哪部分是参考开源/教程、哪部分是自己设计改过的」，坦率比装全自研更可信。</p>
+</section>
+<section class="q" id="q-h3-391">
+<h3 id="q-h3-391">J2 举一个你独立解决的技术问题</h3>
+<p><strong>参考答案</strong>（用 STAR 讲中文方框那个，细节最足）：<br>S：趋势曲线页标题、坐标轴、图例的中文全是 □，但字符串本身正确。<br>T：要定位是编码、数据还是渲染层问题。<br>A：先确认数据源和编码无误，再查 ScottPlot 5 文档/源码发现默认字体 <code>Segoe UI</code> 无 CJK 字形，且 SkiaSharp 自绘文本不做 WinForms 字体回退；试 <code>Fonts.Detect</code> 拿到中文字体后 <code>plot.Font.Set</code>，发现图例仍是方框，继续查到 <code>Legend.FontName</code> 是独立属性，二次设置后全部正常；为不启窗体反复验证，用 SkiaSharp 离屏 <code>Render(canvas, 900, 450)</code> 输出 PNG 检查。<br>R：中文正常，且沉淀了一套「渲染问题离屏验证」的方法，写进开发笔记。</p>
+</section>
+<section class="q" id="q-h3-395">
+<h3 id="q-h3-395">J3 为什么想做上位机 / 你怎么继续补短板？</h3>
+<p><strong>参考答案</strong>：结合项目讲动机（喜欢能直接看到设备数据、物理量和界面联动的闭环，也喜欢现场问题定位），再给具体计划：补 WPF + MVVM、把通信层抽接口并加 Modbus TCP/多从站、补 xUnit 单测、了解 OPC UA 与 MES 数据上报、学习工控现场的接地/干扰/校准规范。<strong>给可验证的动作，不要只说"我会努力学习"</strong>。</p>
+</section>
+<section class="q" id="q-h3-399">
+<h3 id="q-h3-399">J4 你的短板是什么？</h3>
+<p><strong>参考答案</strong>：挑真实且不影响岗位核心的，并带改进证据：「这个项目是单机练习量级，没有经历过量产现场和多设备并发，所以我对高并发、长周期稳定性和现场电磁干扰的经验不足；我能说清理论上该怎么改（分页/批量事务/异步、超时重试、报警去重、结构化日志），也在补 WPF 和单元测试。另外项目里数值用 TEXT 存、8 通道写死，这些是我复盘时明确列出的重构项。」</p>
+<p><strong>红线</strong>：别说「我最大的缺点是太追求完美」这类套话。</p>
+</section>
+<hr>
+<h2 id="q-h2-406">面试前 10 分钟速查表</h2>
+<section class="q" id="q-h3-407">
+<h3 id="q-h3-407">必背数字 / 事实</h3>
+<table><thead><tr><th>项</th><th>值</th></tr></thead><tbody><tr><td>框架</td><td>.NET 8 WinForms（<code>net8.0-windows</code>），SunnyUI 3.9.9</td></tr><tr><td>通信</td><td>Modbus RTU，功能码 0x03，从站 1，起始寄存器 0，连续 8 个保持寄存器</td></tr><tr><td>串口</td><td>9600 / 8 / None / One，读写超时 1000ms</td></tr><tr><td>采集</td><td><code>Task.Run</code> + CTS + <code>Task.Delay</code>，轮询 1000ms，重连间隔 3000ms，日志限流 10s</td></tr><tr><td>标定</td><td><code>value = valueLow + (raw-rawLow)×(valueHigh-valueLow)/(rawHigh-rawLow)</code>，跨度 0 返回 false</td></tr><tr><td>判定</td><td><code>bool?</code> 三态；优先级 超差 &gt; 未标定 &gt; 合格；通道号从 1 开始</td></tr><tr><td>数据库</td><td>SQLite 单表 <code>DataModel</code> 13 列，<code>testTime</code> 有索引；参数化 SQL；<code>PRAGMA table_info</code> 幂等迁移</td></tr><tr><td>界面</td><td>5 个页面（mainView/simpleView×8/totalView/plotView/yvzhiView），4 页懒加载缓存</td></tr><tr><td>构建</td><td><code>dotnet build</code> 0 错误，6 条 NU1701（OpenTK/SkiaSharp 传递依赖目标框架差异）</td></tr><tr><td>依赖</td><td>NModbus 3.0.83、Microsoft.Data.Sqlite 8.0.33、ScottPlot.WinForms 5.1.59、SunnyUI 3.9.9、DH.NModbus、Microsoft.IdentityModel.Logging</td></tr></tbody></table>
+</section>
+<section class="q" id="q-h3-410">
+<h3 id="q-h3-410">必背 3 段代码骨架</h3>
+<pre><code>// 1) 三态判定与优先级
+ok[i] = m.IsCalibrated ? m.IsOk(values[i]) : (bool?)null;   // null = 未标定
+if (ok[i] == false) ng.Add(i + 1);                           // null == false 为 false
+string result = ng.Count &gt; 0 ? &quot;不合格&quot; : anyUncalibrated ? &quot;未标定&quot; : &quot;合格&quot;;</code></pre>
+<pre><code>// 2) 入库：原始快照重新判定，不信界面
+ushort[] snapshot = new ushort[8];
+for (int i = 0; i &lt; 8; i++) snapshot[i] = Volatile.Read(ref mainCommon.oriData[i]);
+QualityResult q = QualityCommon.Evaluate(snapshot, yuzhiCommon.Current);
+record.Id = mainCommon.sqlHelper.Insert(record);  // 成功后才 bindingList.Add</code></pre>
+<pre><code>// 3) 跨线程更新 UI：异步封送 + 三层句柄防御
+private void PostToUi(Action action) {
+    if (IsDisposed || !IsHandleCreated) return;
+    try {
+        Action guarded = () =&gt; { if (!IsDisposed) action(); };
+        if (InvokeRequired) BeginInvoke(guarded); else guarded();
+    } catch (InvalidOperationException) { /* 句柄在投递瞬间被销毁，跳过本帧 */ }
+}</code></pre>
+</section>
+<section class="q" id="q-h3-416">
+<h3 id="q-h3-416">3 句话讲法（被要求"一句话总结"时）</h3>
+<ol><li>「这是一个把设备原始数据变成可追溯质量结论的闭环。」</li><li>「我做的核心不是读数，是保证<strong>判定与入库同源、未标定不误报、异常可自恢复</strong>。」</li><li>「它是个人实践项目，我没量产经验，但每个坑都有代码和笔记能还原。」</li></ol>
+</section>
+<section class="q" id="q-h3-420">
+<h3 id="q-h3-420">最后检查：这 6 个别说错</h3>
+<ul><li>别把 Modbus <strong>TCP</strong> / OPC UA / PLC / MES / WPF 说成已实现。</li><li>别把 CSV 导出说成 Excel（<code>.xlsx</code>）导出。</li><li>别把 <code>data1..data8</code> 说成数值列（是 TEXT）。</li><li>别把 <code>timer1</code> 说成还在采集（已弃用，保留死代码）。</li><li>别把练习项目说成量产上线、别编客户和数据量。</li><li>别忘了「未标定 ≠ 不合格」和「切页句柄重建」这两个本项目最能得分的点。</li></ul>
+</section></div>
+    <div class="footer no-print">基于项目源码逐文件核对生成 · 所有技术描述均可在代码中验证 · 建议面试前通读一遍</div>
+  </main>
+</div>
+<script>
+const tabs=document.querySelectorAll('.tab');
+const panes=document.querySelectorAll('.pane');
+const tocs=document.querySelectorAll('.toc');
+function show(k){
+  tabs.forEach(t=>t.classList.toggle('active',t.dataset.k===k));
+  panes.forEach(p=>p.classList.toggle('active',p.id==='pane-'+k));
+  tocs.forEach(t=>t.classList.toggle('active',t.dataset.k===k));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+tabs.forEach(t=>t.addEventListener('click',()=>{
+  document.getElementById('search').value='';
+  filter('');
+  show(t.dataset.k);
+}));
+document.querySelectorAll('.toc-link').forEach(a=>a.addEventListener('click',e=>{
+  e.preventDefault();
+  document.getElementById(a.getAttribute('href').slice(1)).scrollIntoView({behavior:'smooth',block:'start'});
+}));
+const quizBtn=document.getElementById('quizBtn');
+quizBtn.addEventListener('click',()=>{
+  const on=document.body.classList.toggle('quizmode');
+  quizBtn.classList.toggle('on',on);
+  quizBtn.textContent=on?'显示答案':'只看题目';
+  if(on) show('q');
+});
+const printBtn=document.getElementById('printBtn');
+printBtn.addEventListener('click',()=>window.print());
+function filter(kw){
+  kw=kw.trim().toLowerCase();
+  document.querySelectorAll('#pane-q .q').forEach(s=>{
+    s.classList.toggle('hidden', kw!=='' && !s.textContent.toLowerCase().includes(kw));
+  });
+}
+document.getElementById('search').addEventListener('input',e=>{
+  filter(e.target.value);
+  if(e.target.value.trim()!=='' && !document.getElementById('pane-q').classList.contains('active')) show('q');
+});
+</script>
+</body>
+</html>
