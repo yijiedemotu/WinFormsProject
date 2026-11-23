@@ -1,7 +1,8 @@
 using System.Text.Json;
-using WinFormsApp3.Model;
+using TICP.Helper;
+using TICP.Model;
 
-namespace WinFormsApp3.Common
+namespace TICP.Common
 {
     /// <summary>阈值页的完整配置：8 个通道 + 4 组刀补。</summary>
     public class yuzhiConfig
@@ -34,7 +35,7 @@ namespace WinFormsApp3.Common
             }
             catch (Exception ex)
             {
-                gkHelper.Log.Error("读取 yuzhi.json 失败，改用默认配置", ex);
+                Log.Error("读取 yuzhi.json 失败，改用默认配置", ex);
             }
 
             // 无论文件内容如何，都保证 8 个通道、4 组刀补，避免索引越界
@@ -53,7 +54,7 @@ namespace WinFormsApp3.Common
             if (!File.Exists(JsonPath))
             {
                 try { Save(); }
-                catch (Exception ex) { gkHelper.Log.Error("生成默认 yuzhi.json 失败", ex); }
+                catch (Exception ex) { Log.Error("生成默认 yuzhi.json 失败", ex); }
             }
         }
 

@@ -5,9 +5,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WinFormsApp3.Model;
+using TICP.Model;
 
-namespace WinFormsApp3.Helper
+namespace TICP.Helper
 {
     public class SqlHelper
     {
@@ -65,13 +65,17 @@ namespace WinFormsApp3.Helper
             (testTime, projectName, data1, data2, data3, data4, data5, data6, data7, data8)
             VALUES
             (@testTime, @projectName, @data1, @data2, @data3, @data4, @data5, @data6, @data7, @data8);
-
-            SELECT last_insert_rowid();
         ";
 
             AddParameters(cmd, model);
+            cmd.ExecuteNonQuery();
 
-            return Convert.ToInt32(cmd.ExecuteScalar());
+            // 显式分两步取自增 Id：INSERT 用 ExecuteNonQuery 语义清晰，
+            // SELECT 单独执行，不依赖「多语句 ExecuteScalar 自动推进到下一个结果集」的驱动行为。
+            // 两次命令复用同一连接，last_insert_rowid() 仍然对应刚插入的那一行。
+            using var idCmd = connection.CreateCommand();
+            idCmd.CommandText = "SELECT last_insert_rowid();";
+            return Convert.ToInt32(idCmd.ExecuteScalar());
         }
 
         /// <summary>
@@ -239,7 +243,7 @@ namespace WinFormsApp3.Helper
                 + (conditions.Count > 0 ? " WHERE " + string.Join(" AND ", conditions) : "")
                 + " ORDER BY testTime";
 
-            gkHelper.Log.Info($"查询 SQL: {cmd.CommandText} | start={start} end={end} project={proj}");
+            Log.Info($"查询 SQL: {cmd.CommandText} | start={start} end={end} project={proj}");
 
             using var reader = cmd.ExecuteReader();
             while (reader.Read()) list.Add(MapToModel(reader));

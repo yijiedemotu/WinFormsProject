@@ -1,7 +1,6 @@
-using gkHelper;
 using Sunny.UI;
 using System.Windows.Forms;
-using WinFormsApp3.Helper;
+using TICP.Helper;
 using WinFormsApp3.View;
 
 namespace WinFormsApp3
@@ -22,17 +21,14 @@ namespace WinFormsApp3
             InitializeComponent();
         }
 
-        private void uiSymbolButton1_Click(object sender, EventArgs e)
-        {
-            if (mainView == null) return;
-            FormShowHelper.formShow(mainView, uiPanel2);
-        }
+        private void uiSymbolButton1_Click(object sender, EventArgs e) =>
+            ShowPage(ref mainView, () => new mainView(uiLight1));
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // 默认显示数据测量页
-            mainView = new mainView(uiLight1);
-            FormShowHelper.formShow(mainView, uiPanel2);
+            // 默认显示数据测量页；走统一兜底，页面初始化失败也只提示不崩窗体，
+            // 之后再点导航按钮还能重试（原来这里 mainView 为 null 就直接 return 了）。
+            ShowPage(ref mainView, () => new mainView(uiLight1));
         }
 
         private void Form1_Shown(object sender, EventArgs e) { }

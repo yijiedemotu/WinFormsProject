@@ -2,7 +2,7 @@
 using NModbus.Serial;
 using System.IO.Ports;
 
-namespace gkHelper
+namespace TICP.Helper
 {
     /// <summary>
     /// Modbus RTU通信工具类

@@ -1,7 +1,8 @@
-using gkHelper;
 using System.Windows.Forms;
+using TICP.Helper;
+using WinFormsApp3;
 
-namespace WinFormsApp3
+namespace TICP
 {
     internal static class Program
     {

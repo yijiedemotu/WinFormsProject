@@ -103,6 +103,7 @@
             uiButton2.TabIndex = 6;
             uiButton2.Text = "隐藏通道";
             uiButton2.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            uiButton2.Click += uiButton2_Click;   // 原来漏了这行，所以按钮点了没反应
             // 
             // uiLabel3
             // 

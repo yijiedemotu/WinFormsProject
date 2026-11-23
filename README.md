@@ -9,9 +9,9 @@
 - 或用 Visual Studio 打开 `WinFormsApp3.slnx`
 
 > **串口前提**：串口不再写死。启动后在「数据测量」页的下拉框选端口号，点连接按钮；连接成功会点亮主窗体的指示灯（`Form1` 在 `Load` 时把 `uiLight1` 传给 `mainView`，属于跨页面访问控件）。没有串口时界面仍可正常打开，只是不采集。
-> 当前编译结果：0 错误；历史 `NU1701`（第三方包目标框架与 net8 不一致）若干，另有 2 处 `CS8618`（`Form1.cs` 的 `mainView`、`mainView.cs` 的 `readTask` 都是装载时才赋值的字段），均不影响运行。
+> 当前编译结果：0 错误、6 条 `NU1701` 警告（OpenTK / SkiaSharp 等第三方包目标框架与 net8 不一致），无 C# 编译警告，均不影响运行。
 
-> **命名说明**：仓库/目录叫 `WinFormsProject`，但项目文件、解决方案和代码命名空间仍是 `WinFormsApp3`（沿用练习时的命名，未改名，改动会牵连 `.slnx` 与全部 `using`）。`Helper/ModbusRtuClient.cs`、`Helper/Log.cs` 则沿用 `gkHelper` 命名空间。
+> **命名说明**：仓库/目录叫 `WinFormsProject`，项目文件已改名为 `TICP.csproj`（解决方案文件仍叫 `WinFormsApp3.slnx`）。`Helper` / `Model` / `Common` / `Properties` / `Program` 已迁到 `TICP.*` 命名空间；`View` 下的页面与 `Form1` 仍沿用 `WinFormsApp3.*`，因为它们的 Designer 与 `.resx` 资源名绑定在这个命名空间上。改命名时务必同时改 `using`，否则会报 `CS0234`。
 
 ## 结构
 
@@ -32,6 +32,8 @@
 | `View/yvzhiView.cs` | **阈值设置页**：多面板 + 表格式布局（界面骨架，业务逻辑待补） |
 | `Properties/Resources.*` | 资源文件 |
 | `教程/WinFormsApp3_字体固定教程.md` | 150% / 144 DPI 下字体被放大的实测与原理分析 |
+| `教程/WinFormsApp3_曲线与下拉框修复教程.md` | 查询/趋势页空白、下拉框无数据、DPI 异常的排查记录 |
+| `教程/通道编号_隐藏按钮_曲线中文_修复教程.md` | 通道编号、隐藏通道按钮不响应、曲线中文变方框的定位方法与练习题 |
 
 ## 依赖
 
@@ -39,7 +41,8 @@
 
 ## 需要注意
 
-- 采集链路已通（异步读取 → 回 UI 线程 → 8 通道显示）；`SqlHelper` 已备好，但保存按钮目前只把记录加进内存 `BindingList`，**尚未写库**。
+- 采集链路已通（异步读取 → 回 UI 线程 → 8 通道显示）；保存按钮先写 SQLite（`data.db` 的 `DataModel` 表）再刷新 `BindingList`，写库失败会提示且表格里不留假记录。
+- 采集后台任务只在页面 `Disposed` 时取消；切页只是换 `Parent`，期间继续更新全局数据但不碰控件。单次读失败只跳过本轮，不会终结整个采集循环。
 - `totalView` / `plotView` / `yvzhiView` 仍是界面骨架。
 - `教程/` 里那份文档记录的 DPI 修复**已全部回退**，工程保持最初状态；文档仅作为排查过程与原理留存，第 11 节「已写入工程」不再成立，不要照抄改代码。
 - `bin/`（含 NuGet 运行时副本）、`obj/`、`.vs/`、`*.user`、`Logs/`、`*.db` 由 `.gitignore` 排除，不入库。

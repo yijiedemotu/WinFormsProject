@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.Json.Serialization;
 
-namespace WinFormsApp3.Model
+namespace TICP.Model
 {
     /// <summary>
     /// 单个通道的标定参数与合格阈值。

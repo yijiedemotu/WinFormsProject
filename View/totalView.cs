@@ -9,8 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WinFormsApp3.Common;
-using WinFormsApp3.Model;
+using TICP.Common;
+using TICP.Helper;
+using TICP.Model;
 
 namespace WinFormsApp3.View
 {
@@ -40,7 +41,7 @@ namespace WinFormsApp3.View
             }
             catch (Exception ex)
             {
-                gkHelper.Log.Error("设置查询默认日期失败", ex);
+                Log.Error("设置查询默认日期失败", ex);
             }
         }
 
@@ -59,7 +60,7 @@ namespace WinFormsApp3.View
             }
             catch (Exception ex)
             {
-                gkHelper.Log.Error("加载产品名称下拉框失败", ex);
+                Log.Error("加载产品名称下拉框失败", ex);
             }
         }
 
@@ -77,7 +78,7 @@ namespace WinFormsApp3.View
             catch (Exception ex)
             {
                 // 启动阶段不让数据库异常拖垮整个窗体
-                gkHelper.Log.Error("查询统计页加载历史数据失败", ex);
+                Log.Error("查询统计页加载历史数据失败", ex);
             }
         }
 
@@ -90,18 +91,28 @@ namespace WinFormsApp3.View
             string start = uiDatePicker1.Value.ToString(f, CultureInfo.InvariantCulture);
             string end = uiDatePicker2.Value.ToString(f, CultureInfo.InvariantCulture);
 
-            var datas = mainCommon.sqlHelper.GetByConditions(start, end, uiComboBox1.Text.Trim());
-            dataModels.Clear();
-            foreach (var item in datas)
+            try
             {
-                dataModels.Add(item);
-            }
+                var datas = mainCommon.sqlHelper.GetByConditions(start, end, uiComboBox1.Text.Trim());
+                dataModels.Clear();
+                foreach (var item in datas)
+                {
+                    dataModels.Add(item);
+                }
 
-            // int.TryParse 代替 Convert.ToInt16：下拉框里出现非数字时不会抛异常
-            if (int.TryParse(uiComboBox2.Text.Trim(), out int ch) && ch >= 1 && ch <= 8)
-                ShowOnlySpecifiedColumns(dataGridView1, "Column1", "Column2", "Column3", $"Column{ch + 3}");
-            else
-                ShowAllColumns(dataGridView1);
+                // int.TryParse 代替 Convert.ToInt16：下拉框里出现非数字时不会抛异常
+                if (int.TryParse(uiComboBox2.Text.Trim(), out int ch) && ch >= 1 && ch <= 8)
+                    ShowOnlySpecifiedColumns(dataGridView1, "Column1", "Column2", "Column3", $"Column{ch + 3}");
+                else
+                    ShowAllColumns(dataGridView1);
+            }
+            catch (Exception ex)
+            {
+                // 数据库被占用 / 文件损坏时只提示，别让一次查询把整个界面带崩
+                Log.Error("按条件查询历史数据失败", ex);
+                MessageBox.Show("查询失败：" + ex.Message, "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>只显示指定的列，其余列全部隐藏</summary>

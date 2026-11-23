@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using WinFormsApp3.Common;
-using WinFormsApp3.Model;
+using TICP.Common;
+using TICP.Helper;
+using TICP.Model;
 
 namespace WinFormsApp3.View
 {
@@ -36,7 +37,7 @@ namespace WinFormsApp3.View
             }
             catch (Exception ex)
             {
-                gkHelper.Log.Error("设置曲线默认日期失败", ex);
+                Log.Error("设置曲线默认日期失败", ex);
             }
         }
 
@@ -45,11 +46,30 @@ namespace WinFormsApp3.View
 
         private void uiButton1_Click(object? sender, EventArgs e) => LoadPlot();
 
+        /// <summary>
+        /// 修复中文变方框（豆腐块）：ScottPlot 5 默认字体是 Segoe UI，字形表里没有汉字，
+        /// 所以标题、轴标签、图例里的中文全部被画成 □。
+        /// Fonts.Detect(中文样本) 会挑一个系统里真正支持这套字符的字体
+        /// （中文 Windows 实测返回 Microsoft YaHei UI）；
+        /// Plot.Font.Set 会把它应用到标题/轴标签，并改掉全局默认字体，
+        /// 之后新增的 plottables 也自动用这个字体。
+        /// </summary>
+        private static void ApplyChineseFont(ScottPlot.Plot plot)
+        {
+            string font = ScottPlot.Fonts.Detect("通道趋势测量值检测时间");
+            plot.Font.Set(font);
+            plot.Legend.FontName = font;   // 图例字体是独立的，单独指定一次
+        }
+
         /// <summary>按日期区间 + 通道，把 data1..data8 画成折线。</summary>
         private void LoadPlot()
         {
             try
             {
+                // 每次重绘前统一字体：Clear() 只清 plottables，字体设置不会丢，
+                // 但放在这里最稳妥，也方便以后换字体只改一处。
+                ApplyChineseFont(formsPlot1.Plot);
+
                 const string f = "yyyy-MM-dd";
                 string start = uiDatePicker1.Value.ToString(f, CultureInfo.InvariantCulture);
                 string end = uiDatePicker2.Value.ToString(f, CultureInfo.InvariantCulture);
@@ -82,12 +102,12 @@ namespace WinFormsApp3.View
                 formsPlot1.Plot.XLabel("检测时间");
                 formsPlot1.Plot.YLabel("测量值");
                 formsPlot1.Refresh();
-                gkHelper.Log.Info($"趋势曲线绘制完成：通道{ch}，{xs.Count} 个点，区间 {start} ~ {end}");
+                Log.Info($"趋势曲线绘制完成：通道{ch}，{xs.Count} 个点，区间 {start} ~ {end}");
             }
             catch (Exception ex)
             {
                 // 曲线是可选功能：失败只记日志并在标题提示，不弹窗打断其它页面
-                gkHelper.Log.Error("绘制趋势曲线失败", ex);
+                Log.Error("绘制趋势曲线失败", ex);
                 try
                 {
                     formsPlot1.Plot.Title("绘制失败：" + ex.Message);

@@ -1,11 +1,11 @@
-﻿using gkHelper;
-using Sunny.UI;
+﻿using Sunny.UI;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using Timer = System.Windows.Forms.Timer;
-using WinFormsApp3.Common;
-using WinFormsApp3.Model;
+using TICP.Model;
+using TICP.Common;
+using TICP.Helper;
 
 namespace WinFormsApp3.View
 {
@@ -55,10 +55,14 @@ namespace WinFormsApp3.View
             refreshTimer = new Timer { Interval = 1000 };
             refreshTimer.Tick += (s, e) =>
             {
+                if (IsDisposed || !IsHandleCreated) return;
                 if (index >= 1 && index <= 8)
-                    uiTextBox1.Text = mainCommon.data[index - 1].ToString(CultureInfo.InvariantCulture);
+                    uiTextBox1.Text = Volatile.Read(ref mainCommon.data[index - 1])
+                        .ToString(CultureInfo.InvariantCulture);
             };
-            HandleDestroyed += (s, e) => refreshTimer.Stop();
+            // 只在页面真正释放时停表：切页会重建句柄并触发 HandleDestroyed，
+            // 用 HandleDestroyed 停掉后，切回来定时器就再也不会启动了。
+            Disposed += (s, e) => { refreshTimer.Stop(); refreshTimer.Dispose(); };
             refreshTimer.Start();
         }
 

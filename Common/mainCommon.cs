@@ -1,12 +1,11 @@
-﻿using gkHelper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WinFormsApp3.Helper;
+using TICP.Helper;
 
-namespace WinFormsApp3.Common
+namespace TICP.Common
 {
     public static class mainCommon
     {

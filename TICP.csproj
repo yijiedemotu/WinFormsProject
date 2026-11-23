@@ -5,12 +5,10 @@
 		<Nullable>enable</Nullable>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
-		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
-		<!-- 核心：程序运行时启用 PerMonitorV2 逐显示器DPI感知 -->
+		<!-- 运行时启用 PerMonitorV2 逐显示器 DPI 感知（只保留一处，避免两个互相矛盾的设置） -->
 		<ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
-		<!-- 【关键】让VS Code/VS设计器固定96DPI渲染，预览稳定，减少设计时视觉跳变 -->
-		<ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
+		<!-- 设计器固定 96 DPI 渲染，减少设计时视觉跳变 -->
+		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
 	</PropertyGroup>
 
 	<ItemGroup>

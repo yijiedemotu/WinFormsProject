@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WinFormsApp3.Model
+namespace TICP.Model
 {
     public class dataModel
     {

@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WinFormsApp3.Helper
+namespace TICP.Helper
 {
     public class FormShowHelper
     {

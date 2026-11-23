@@ -1,4 +1,4 @@
-﻿namespace gkHelper
+﻿namespace TICP.Helper
 {
     /// <summary>
     /// 轻量文本日志。路径固定为程序基目录下的 Logs，按日期/级别分目录。
