@@ -35,23 +35,54 @@ namespace WinFormsApp3.View
             uiTextBox1.Text = $"通道{channelNo}";
         }
 
-        //刷新simpleView中的数据（由采集后台线程调用）
-        public void refreshData(ushort data)
+        /// <summary>
+        /// 用换算后的物理量刷新卡片，并同步合格/不合格指示灯。由采集后台线程调用。
+        /// ok 为 null 表示尚未标定，灯用灰色，不误报合格。
+        /// </summary>
+        public void refreshQuality(double value, bool? ok)
         {
-            //重要：在异步任务里面，如果我们需要对控件进行一个更改，要把它抛出到 UI 线程才行。
-            //切页 / 关闭窗体时句柄可能正在销毁，直接 Invoke 会抛 InvalidOperationException，
-            //甚至因为 Invoke 是同步等待而拖住程序退出，所以先校验、再用 BeginInvoke 投递。
-            if (IsDisposed || !IsHandleCreated) return;
+            PostToUi(() =>
+            {
+                uiTextBox7.Text = value.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+                uiTextBox3.Text = ok switch
+                {
+                    true => "合格",
+                    false => "不合格",
+                    null => "未标定"
+                };
+                uiTextBox3.ForeColor = ok switch
+                {
+                    true => Color.Green,
+                    false => Color.Red,
+                    null => Color.Gray
+                };
+                uiLedBulb1.Color = ok switch
+                {
+                    true => Color.LimeGreen,
+                    false => Color.Red,
+                    null => Color.Gray
+                };
+                uiLedBulb2.Color = Color.Gray;   // 第二个灯保留给报警闪烁，暂不启用
+            });
+        }
 
+        /// <summary>保留旧接口：只刷新原始计数（无判定时使用）。</summary>
+        public void refreshData(ushort data) => PostToUi(() =>
+            uiTextBox7.Text = data.ToString(System.Globalization.CultureInfo.InvariantCulture));
+
+        /// <summary>
+        /// 把控件更新投递回 UI 线程。切页 / 关闭窗体时句柄可能正在销毁，
+        /// 直接 Invoke 会抛 InvalidOperationException，甚至拖住程序退出，
+        /// 所以先校验、再用 BeginInvoke 投递。
+        /// </summary>
+        private void PostToUi(Action action)
+        {
+            if (IsDisposed || !IsHandleCreated) return;
             try
             {
-                Action update = () =>
-                {
-                    if (!IsDisposed) uiTextBox7.Text = data.ToString();
-                };
-
-                if (InvokeRequired) BeginInvoke(update);
-                else update();
+                Action guarded = () => { if (!IsDisposed) action(); };
+                if (InvokeRequired) BeginInvoke(guarded);
+                else guarded();
             }
             // ObjectDisposedException 继承自 InvalidOperationException，一个 catch 全覆盖
             catch (InvalidOperationException) { /* 句柄在投递瞬间被销毁，跳过本帧 */ }

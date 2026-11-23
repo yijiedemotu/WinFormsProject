@@ -45,9 +45,32 @@ namespace TICP.Helper
                 data5 TEXT,
                 data6 TEXT,
                 data7 TEXT,
-                data8 TEXT
+                data8 TEXT,
+                result TEXT,
+                ngChannels TEXT
             );
         ";
+            cmd.ExecuteNonQuery();
+
+            // 旧库升级：CREATE TABLE IF NOT EXISTS 不会给已存在的表加列。
+            // 先查 PRAGMA table_info，缺哪列补哪列，重复运行不会报错。
+            var existing = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            cmd.CommandText = "PRAGMA table_info(DataModel);";
+            using (var reader = cmd.ExecuteReader())
+                while (reader.Read()) existing.Add(reader.GetString(1));
+
+            foreach (string col in new[] { "result", "ngChannels" })
+            {
+                if (existing.Contains(col)) continue;
+                cmd.CommandText = $"ALTER TABLE DataModel ADD COLUMN {col} TEXT;";
+                cmd.ExecuteNonQuery();
+            }
+            // 旧行没有判定值，统一补成「未标定」，避免查询页显示空白
+            cmd.CommandText = "UPDATE DataModel SET result = '未标定' WHERE result IS NULL OR result = '';";
+            cmd.ExecuteNonQuery();
+
+            // 时间索引：按日期区间查询是最高频操作，数据量上来后差别很明显
+            cmd.CommandText = "CREATE INDEX IF NOT EXISTS IX_DataModel_testTime ON DataModel(testTime);";
             cmd.ExecuteNonQuery();
         }
 
@@ -62,9 +85,9 @@ namespace TICP.Helper
             var cmd = connection.CreateCommand();
             cmd.CommandText = @"
             INSERT INTO DataModel
-            (testTime, projectName, data1, data2, data3, data4, data5, data6, data7, data8)
+            (testTime, projectName, data1, data2, data3, data4, data5, data6, data7, data8, result, ngChannels)
             VALUES
-            (@testTime, @projectName, @data1, @data2, @data3, @data4, @data5, @data6, @data7, @data8);
+            (@testTime, @projectName, @data1, @data2, @data3, @data4, @data5, @data6, @data7, @data8, @result, @ngChannels);
         ";
 
             AddParameters(cmd, model);
@@ -98,7 +121,9 @@ namespace TICP.Helper
                 data5 = @data5,
                 data6 = @data6,
                 data7 = @data7,
-                data8 = @data8
+                data8 = @data8,
+                result = @result,
+                ngChannels = @ngChannels
             WHERE Id = @Id
         ";
 
@@ -267,7 +292,9 @@ namespace TICP.Helper
                 data5 = reader["data5"] as string ?? "",
                 data6 = reader["data6"] as string ?? "",
                 data7 = reader["data7"] as string ?? "",
-                data8 = reader["data8"] as string ?? ""
+                data8 = reader["data8"] as string ?? "",
+                result = reader["result"] as string ?? "未标定",
+                ngChannels = reader["ngChannels"] as string ?? ""
             };
         }
 
@@ -286,6 +313,38 @@ namespace TICP.Helper
             cmd.Parameters.AddWithValue("@data6", model.data6 ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@data7", model.data7 ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@data8", model.data8 ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@result", model.result ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@ngChannels", model.ngChannels ?? (object)DBNull.Value);
+        }
+
+        /// <summary>
+        /// 按同样条件统计总数、不合格数与合格率。合格率用 SQL 算，避免把全部记录拉到内存。
+        /// </summary>
+        public (int total, int ng, double rate) GetStats(
+            string? startTime, string? endTime, string? projectName)
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+            var cmd = connection.CreateCommand();
+            var conditions = new List<string>();
+            string? start = NormalizeTime(startTime, false);
+            string? end = NormalizeTime(endTime, true);
+            string? proj = string.IsNullOrWhiteSpace(projectName) ? null : projectName.Trim();
+            if (start != null) { conditions.Add("testTime >= @startTime"); cmd.Parameters.AddWithValue("@startTime", start); }
+            if (end != null) { conditions.Add("testTime <= @endTime"); cmd.Parameters.AddWithValue("@endTime", end); }
+            if (proj != null) { conditions.Add("projectName = @projectName"); cmd.Parameters.AddWithValue("@projectName", proj); }
+
+            string where = conditions.Count > 0 ? " WHERE " + string.Join(" AND ", conditions) : "";
+            cmd.CommandText = $@"
+                SELECT COUNT(*),
+                       SUM(CASE WHEN result = '不合格' THEN 1 ELSE 0 END)
+                FROM DataModel{where};";
+            using var reader = cmd.ExecuteReader();
+            if (!reader.Read()) return (0, 0, 0);
+            int total = reader.GetInt32(0);
+            int ng = reader.IsDBNull(1) ? 0 : reader.GetInt32(1);
+            double rate = total == 0 ? 0 : (total - ng) * 100.0 / total;
+            return (total, ng, rate);
         }
     }
 }

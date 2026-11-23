@@ -30,5 +30,9 @@ namespace TICP.Model
         public string data7 { get; set; } = "";
         //通道8数据
         public string data8 { get; set; } = "";
+        //整条记录的判定：全部合格 = "合格"，任一通道超差 = "不合格"，未标定 = "未标定"
+        public string result { get; set; } = "未标定";
+        //不合格通道号列表，如 "1,3,5"；没有则为 ""
+        public string ngChannels { get; set; } = "";
     }
 }

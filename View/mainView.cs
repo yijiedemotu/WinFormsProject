@@ -22,6 +22,9 @@ namespace WinFormsApp3.View
         //创建一个UILight的实例，用于显示连接状态
         private UILight uiLight1;
 
+        // 用户主动断开后不再自动重连；后台任务读得到这个 volatile 标志
+        private volatile bool manualDisconnect;
+
         //data里是下位机的数据
         //private ushort[] data = new ushort[8];    已经用全局变量替代
 
@@ -37,6 +40,10 @@ namespace WinFormsApp3.View
             this.uiLight1 = uiLight1;
 
             dataGridView1.DataSource = bindingList;//数据源绑定
+
+            // 启动时读一次配置：串口参数、轮询周期、重连间隔都从 appconfig.json 来
+            AppConfigStore.Load();
+            mainCommon.modbusRtuClient.SlaveId = AppConfigStore.Current.SlaveId;
 
             // 页面真正销毁时才停止采集。切页只是把页面从 uiPanel2 里摘下来（换 Parent），
             // 若在这里就取消，从别的页面切回来后采集任务永远不会重新启动。
@@ -59,46 +66,70 @@ namespace WinFormsApp3.View
 
             readTask = Task.Run(async () =>
             {
-                long lastErrorLog = -10000;   // 保证第一次失败就会记日志
+                long lastErrorLog = -10000;      // 保证第一次失败就会记日志
+                long lastReconnect = -10000;     // 重连限流，避免端口占用时疯狂重试
+                long lastNgLog = -10000;         // 超差日志限流
+                AppConfig cfg = AppConfigStore.Current;
+
                 while (!token.IsCancellationRequested)
                 {
-                    // try 放在 while 里面：一次超时/掉线只跳过本轮，不能把整个采集循环终结掉
                     try
                     {
+                        // 断线自动重连：只有用户没主动断开、配置允许、且距上次尝试超过间隔才试
+                        if (!mainCommon.modbusRtuClient.IsConnected &&
+                            !manualDisconnect && cfg.AutoReconnect &&
+                            !string.IsNullOrWhiteSpace(cfg.PortName) &&
+                            Environment.TickCount64 - lastReconnect >= cfg.ReconnectIntervalMs)
+                        {
+                            lastReconnect = Environment.TickCount64;
+                            TryConnect(cfg.PortName, false);   // 静默重连，不弹窗
+                            UpdateConnectionUi(mainCommon.modbusRtuClient.IsConnected,
+                                mainCommon.modbusRtuClient.IsConnected ? cfg.PortName + " 已连接（自动）" : "重连中…");
+                        }
+
                         if (mainCommon.modbusRtuClient.IsConnected)
                         {
-                            ushort[] tempData = mainCommon.modbusRtuClient.ReadHoldingRegisters(0, 8);
-                            // ushort[] -> double[] 逐项赋值，避免 Array.Copy 的类型转换歧义
-                            // Volatile：采集线程写、UI 线程读，避免 32 位环境下 double 撕裂读
-                            for (int k = 0; k < tempData.Length && k < mainCommon.data.Length; k++)
-                                Volatile.Write(ref mainCommon.data[k], tempData[k]);
+                            ushort[] raw = mainCommon.modbusRtuClient.ReadHoldingRegisters(
+                                cfg.StartAddress, (ushort)cfg.ChannelCount);
+
+                            // 原始值 → 标定/判定（纯逻辑，不碰控件）
+                            QualityResult q = QualityCommon.Evaluate(raw, yuzhiCommon.Current);
+                            for (int k = 0; k < q.Values.Length && k < mainCommon.data.Length; k++)
+                            {
+                                Volatile.Write(ref mainCommon.oriData[k], raw[k]);
+                                Volatile.Write(ref mainCommon.data[k], q.Values[k]); // 全局数组存物理量
+                            }
 
                             // 切到别的页面 / 句柄已销毁时不碰控件，只继续更新全局数据
                             if (!IsDisposed && IsHandleCreated && channelsVisible)
                             {
-                                for (int i = 0; i < simpleViews.Count && i < tempData.Length; i++)
-                                {
-                                    //`item.refreshData(data[i])`：**后台线程调用 simpleView 的方法**
-                                    //`refreshData` 里面把赋值投递回 UI 线程
-                                    simpleViews[i].refreshData(tempData[i]);
-                                }
+                                int n = Math.Min(simpleViews.Count, q.Values.Length);
+                                for (int i = 0; i < n; i++)
+                                    simpleViews[i].refreshQuality(q.Values[i], q.Ok[i]);
+                            }
+
+                            // 超差报警写日志（限流 10 秒），不在后台线程弹 MessageBox
+                            if (q.HasNg && Environment.TickCount64 - lastNgLog > 10000)
+                            {
+                                Log.Warn($"通道 [{q.NgChannels}] 超差");
+                                lastNgLog = Environment.TickCount64;
                             }
                         }
                     }
                     catch (OperationCanceledException) { break; }
                     catch (Exception ex)
                     {
-                        // 后台线程里 MessageBox.Show 会弹出无属主窗口甚至卡住退出，改为写日志；
-                        // 连续失败时限流，避免每秒刷一条日志。
+                        // ModbusRtuClient 读失败时已经自行 Disconnect，下一轮会走自动重连分支
                         long now = Environment.TickCount64;
                         if (now - lastErrorLog > 10000)
                         {
-                            Log.Error("采集数据失败（已断线，下一轮自动跳过读取）", ex);
+                            Log.Error("采集失败（已断线，将按配置自动重连）", ex);
                             lastErrorLog = now;
                         }
+                        UpdateConnectionUi(false, "重连中…");
                     }
 
-                    try { await Task.Delay(1000, token); }
+                    try { await Task.Delay(cfg.PollIntervalMs, token); }
                     catch (OperationCanceledException) { break; }
                 }
             }, token);
@@ -114,13 +145,70 @@ namespace WinFormsApp3.View
                 uiComboBox1.Items.Clear();
                 foreach (string port in ModbusRtuClient.GetAvailablePorts())
                     uiComboBox1.Items.Add(port);
-                if (uiComboBox1.Items.Count > 0) uiComboBox1.SelectedIndex = 0;
+
+                // 优先选中上次连接成功的端口（appconfig.json），否则选第一个
+                string preferred = AppConfigStore.Current.PortName;
+                if (!string.IsNullOrWhiteSpace(preferred) && uiComboBox1.Items.Contains(preferred))
+                    uiComboBox1.SelectedItem = preferred;
+                else if (uiComboBox1.Items.Count > 0)
+                    uiComboBox1.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
                 // 枚举串口失败不能拖垮页面加载（如无串口驱动、非 Windows 运行时）
                 Log.Error("枚举串口失败", ex);
             }
+        }
+
+        /// <summary>用配置里的串口参数连接。autoReconnect 调用时静默失败，手动点击才弹窗。</summary>
+        private bool TryConnect(string portName, bool showMessage)
+        {
+            AppConfig cfg = AppConfigStore.Current;
+            cfg.PortName = portName;
+            try
+            {
+                bool ok = mainCommon.modbusRtuClient.Connect(portName, cfg.BaudRate, cfg.DataBits,
+                    cfg.ToStopBits(), cfg.ToParity());
+                if (ok) AppConfigStore.Save();   // 连接成功才记住端口，避免写进一个错误端口
+                else if (showMessage)
+                    MessageBox.Show($"无法连接 {portName}，请检查端口占用、波特率与设备供电。\n详细堆栈已写入 Logs 目录。",
+                        "连接失败", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return ok;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("连接串口失败", ex);
+                if (showMessage)
+                    MessageBox.Show("连接失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
+        /// <summary>后台任务也要更新指示灯/状态文字，统一走 BeginInvoke 回 UI 线程。</summary>
+        private void UpdateConnectionUi(bool connected, string text)
+        {
+            Action update = () =>
+            {
+                try
+                {
+                    if (uiLight1 != null && !uiLight1.IsDisposed)
+                        uiLight1.State = connected ? UILightState.On : UILightState.Off;
+                }
+                catch (InvalidOperationException) { /* 主窗体正在关闭 */ }
+
+                if (!IsDisposed)
+                {
+                    uiLabel3.Text = text;
+                    uiButton1.Text = connected ? "断开" : "连接";
+                }
+            };
+
+            try
+            {
+                if (InvokeRequired) BeginInvoke(update);
+                else update();
+            }
+            catch (InvalidOperationException) { /* 句柄在投递瞬间被销毁 */ }
         }
 
         //事件，创建8个simpleView
@@ -168,12 +256,19 @@ namespace WinFormsApp3.View
             }
         }
 
-        //跨页面访问控件
-        //当点击uiButton1按钮时，连接下位机，并将连接状态显示在uiLight1上
-        //信号灯在Form1界面，在mainView界面中无法直接访问uiLight1，
+        //跨页面访问控件：信号灯在 Form1，由构造函数注入；这里通过 BeginInvoke 更新
         private void uiButton1_Click(object sender, EventArgs e)
         {
-            //获取下拉框中选中的值，并将其传递给modbusRtuClient进行连接
+            // 已连接 → 主动断开，并关掉自动重连（否则下一秒又连上了）
+            if (mainCommon.modbusRtuClient.IsConnected)
+            {
+                manualDisconnect = true;
+                mainCommon.modbusRtuClient.Disconnect();
+                UpdateConnectionUi(false, "无连接（已手动断开）");
+                Log.Info("用户主动断开串口");
+                return;
+            }
+
             string comName = uiComboBox1.Text.Trim();
             if (string.IsNullOrEmpty(comName))
             {
@@ -182,26 +277,9 @@ namespace WinFormsApp3.View
                 return;
             }
 
-            //当窗体加载时，拿到通讯对象modbusRtuClient，并传递给mainView、totalView、plotView、yvzhiView
-            bool isConnected;
-            try
-            {
-                isConnected = mainCommon.modbusRtuClient.Connect(comName);
-            }
-            catch (Exception ex)
-            {
-                Log.Error("连接串口失败", ex);
-                isConnected = false;
-            }
-
-            // Connect 内部会先 Disconnect，重连失败时原来的绿灯必须复位，否则状态是假的
-            uiLight1.State = isConnected ? UILightState.On : UILightState.Off;
-            uiLabel3.Text = isConnected ? comName : "无连接";   // 状态文字与指示灯同步
-            if (!isConnected)
-            {
-                MessageBox.Show($"无法连接 {comName}，请检查端口是否被占用、设备是否上电。\n详细堆栈已写入 Logs 目录。",
-                    "连接失败", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+            manualDisconnect = false;
+            bool ok = TryConnect(comName, true);
+            UpdateConnectionUi(ok, ok ? comName + " 已连接" : "无连接");
         }
 
         /// <summary>
@@ -229,19 +307,28 @@ namespace WinFormsApp3.View
         //当点击uiButton2按钮时，读取下位机的数据，并将数据存放在dataModel中
         private void uiButton3_Click(object sender, EventArgs e)
         {
-            //创建dataModel的实例，用于存放读取到的数据（Id 交给数据库自增，不用 bindingList.Count）
+            // 保存的是「这一刻的采样 + 判定」，不是界面上看到的某个数字：
+            // 从 oriData 快照重新算一次，保证保存到库里的物理量与判定一致。
+            ushort[] snapshot = new ushort[8];
+            for (int i = 0; i < snapshot.Length; i++)
+                snapshot[i] = Volatile.Read(ref mainCommon.oriData[i]);
+            QualityResult q = QualityCommon.Evaluate(snapshot, yuzhiCommon.Current);
+            string[] physical = QualityCommon.ToStrings(q.Values);
+
             dataModel record = new dataModel()
             {
                 testTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                 projectName = uiTextBox1.Text,
-                data1 = Volatile.Read(ref mainCommon.data[0]).ToString(CultureInfo.InvariantCulture),
-                data2 = Volatile.Read(ref mainCommon.data[1]).ToString(CultureInfo.InvariantCulture),
-                data3 = Volatile.Read(ref mainCommon.data[2]).ToString(CultureInfo.InvariantCulture),
-                data4 = Volatile.Read(ref mainCommon.data[3]).ToString(CultureInfo.InvariantCulture),
-                data5 = Volatile.Read(ref mainCommon.data[4]).ToString(CultureInfo.InvariantCulture),
-                data6 = Volatile.Read(ref mainCommon.data[5]).ToString(CultureInfo.InvariantCulture),
-                data7 = Volatile.Read(ref mainCommon.data[6]).ToString(CultureInfo.InvariantCulture),
-                data8 = Volatile.Read(ref mainCommon.data[7]).ToString(CultureInfo.InvariantCulture)
+                data1 = physical.Length > 0 ? physical[0] : "0",
+                data2 = physical.Length > 1 ? physical[1] : "0",
+                data3 = physical.Length > 2 ? physical[2] : "0",
+                data4 = physical.Length > 3 ? physical[3] : "0",
+                data5 = physical.Length > 4 ? physical[4] : "0",
+                data6 = physical.Length > 5 ? physical[5] : "0",
+                data7 = physical.Length > 6 ? physical[6] : "0",
+                data8 = physical.Length > 7 ? physical[7] : "0",
+                result = q.Result,
+                ngChannels = q.NgChannels
             };
 
             try
